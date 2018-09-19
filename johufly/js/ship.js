@@ -156,14 +156,18 @@ var Ship = Polygon.extend({
 
 			// keep within bounds
 			if (this.x > this.maxX) {
-				this.x = 0;
-			} else if (this.x < 0) {
 				this.x = this.maxX;
+				this.vel.x = 0;
+			} else if (this.x < 0) {
+				this.x = 0;
+				this.vel.x = 0;
 			}
 			if (this.y > this.maxY) {
-				this.y = 0;
+				this.y = this.maxY
+				this.vel.y = 0;
 			} else if (this.y < 0) {
-				this.y = this.maxY;
+				this.y = 0;
+				this.vel.y = 0;
 			}
 		},
 
