@@ -55,8 +55,7 @@ var Wall = Polygon.extend({
 		},
 
 		/**
-		 * Translate and rotate the Wall
-		 */
+		//Translate and rotate the Wall. EDIT: Walls don't move for now
 		update: function () {
 			// update position
 			this.x += this.vel.x;
@@ -76,6 +75,7 @@ var Wall = Polygon.extend({
 			// rotate Walls
 			this.rotate(this.rotAngle);
 		},
+		*/
 
 		/**
 		 * Draw the Wall with an augmented drawing context
