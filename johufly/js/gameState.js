@@ -35,10 +35,10 @@ var GameState = State.extend({
 			this.lvl = 0;
 
 			// create lifepolygon and rotate 45° counter clockwise
-			this.lifepolygon = new Polygon(Points.SHIP);
-			this.lifepolygon.scale(1.5);
+			this.lifepolygon = new Polygon(Points.SHIPSIMPLE);
+			this.lifepolygon.scale(1);
 			this.lifepolygon.rotate(-Math.PI / 2);
-			
+
 			// create hppolygon
 			this.hppolygon = new Polygon(Points.HP);
 			this.hppolygon.scale(0.75);
@@ -222,7 +222,7 @@ var GameState = State.extend({
 			// draw score and extra lives
 			ctx.vectorText(this.score, 3, 35, 15);
 			for (var i = 0; i < this.lives; i++) {
-				ctx.drawPolygon(this.lifepolygon, 40 + 15 * i, 85);
+				ctx.drawPolygon(this.lifepolygon, 40 + 17 * i, 85);
 			}
 			// draw hp
 			for (var i = 0; i < this.ship.hp; i++) {
