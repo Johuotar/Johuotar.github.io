@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Asteroids</title>
+	<title>Johufly</title>
 	
 	<!-- Stylesheets -->
 	<link rel="stylesheet" href="css/style.css">
@@ -35,12 +35,22 @@
 </head>
 <body>
 	<input type="text" id="namefield">
-	<div style="background-color:#fff;position:absolute;top:0;width:200px;height:50px;"></div>
-	
+<div style="background-color:#fff;position:absolute;top:0;width:200px;height:50px;">
+<audio id="music" src="johuflymaintheme.wav" type="audio/wav" loop></audio>
+<p id="musicon">Turn music on!</p>
+<p id="musicoff">Turn music off!</p>
+</div>
 	<script>
 		// create, initiate and run game
 		var game = new Game();
 		game.run();
+	
+	document.getElementById("musicon").onclick = function () {
+		document.getElementById('music').play();
+	};
+	document.getElementById("musicoff").onclick = function () {
+		document.getElementById('music').pause();
+	};
 	</script>
 </body>
 </html>
