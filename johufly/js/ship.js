@@ -73,6 +73,11 @@ var Ship = Polygon.extend({
 			if (!this.visible) {
 				return false;
 			}
+			// don't test if the object no longer exists, bullet destroyed it etc
+			if (astr == null) {
+				return false;
+				console.log("collide function target was null, return false");
+			}
 			for (var i = 0, len = this.points.length - 2; i < len; i += 2) {
 				var x = this.points[i] + this.x;
 				var y = this.points[i + 1] + this.y;

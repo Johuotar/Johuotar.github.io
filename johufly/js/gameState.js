@@ -185,6 +185,10 @@ var GameState = State.extend({
 				for (var j = 0, len2 = this.bullets.length; j < len2; j++) {
 					var b = this.bullets[j];
 
+					if (a == null) {
+						return;
+						console.log("bullet asteroid hit check, target was null, skipped");
+					}
 					if (a.hasPoint(b.x, b.y)) {
 						this.bullets.splice(j, 1);
 						len2--;
@@ -244,6 +248,49 @@ var GameState = State.extend({
 				this.lvl++;
 				this.generateLvl();
 			}
+			
+			// iterate thru and update all walls
+			for (var i = 0, len = this.walls.length; i < len; i++) {
+				var a = this.walls[i];
+
+				// if ship collides to wall
+				if (this.ship.collide(a)) {
+					this.ship.hp--;
+					this.ship.vel.x = 0;
+					this.ship.vel.y = 0;
+					if (this.ship.hp <= 0) {
+						this.ship.x = this.canvasWidth / 2;
+						this.ship.y = this.canvasHeight / 2;
+						this.ship.vel = {
+							x: 0,
+							y: 0
+						}
+						this.lives--;
+						this.ship.hp = 100;
+						if (this.lives <= 0) {
+							this.gameOver = true;
+						}
+						this.ship.visible = false;
+					}
+				}
+
+				// check if bullets hits the walls
+				for (var j = 0, len2 = this.bullets.length; j < len2; j++) {
+					var b = this.bullets[j];
+
+					if (a == null) {
+						return;
+						console.log("bullet wall hit check, target was null, skipped");
+					}
+					if (a.hasPoint(b.x, b.y)) {
+						this.bullets.splice(j, 1);
+						len2--;
+						j--;
+						i--;
+					}
+				}
+			}
+			
 		},
 
 		/**
