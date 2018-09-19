@@ -26,6 +26,7 @@ var Game = Class.extend({
 			right:    39,
 			down:     40,
 			spacebar: 32,
+			shift:    16,
 			enter:    13
 		});
 

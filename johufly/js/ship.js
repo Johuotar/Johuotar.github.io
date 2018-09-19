@@ -54,7 +54,11 @@ var Ship = Polygon.extend({
 			//cooldown
 			this.fireSpeed = 10;
 			this.fireCooldown = 0;
-
+			
+			//angle is random when firing second firetype
+			this.angleshift = Math.random() - 0.4
+			this.angleshift *= Math.floor(Math.random()*2) == 1 ? 1 : -1; // this will add minus sign in 50% of cases
+			
 		},
 		
 
@@ -92,6 +96,18 @@ var Ship = Polygon.extend({
 			b.maxY = this.maxY;
 			return b;
 		},
+		
+		shoot2: function () {
+			var b = new Bullet(this.points[0] + this.x, this.points[1] + this.y, this.angle + this.angleshift);
+			//angle of bullets changes
+			this.angleshift = Math.random() - 0.4
+			this.angleshift *= Math.floor(Math.random()*2) == 1 ? 1 : -1; // 50% chance of minus sign
+			b.maxX = this.maxX;
+			b.maxY = this.maxY;
+			return b;
+		},
+		
+		
 
 		/**
 		 * Update the velocity of the bullet depending on facing

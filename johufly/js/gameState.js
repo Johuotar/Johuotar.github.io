@@ -113,6 +113,11 @@ var GameState = State.extend({
 			if (input.isDown("up")) {
 				this.ship.addVel();
 			}
+			
+			if (input.isDown("shift") && this.ship.fireCooldown >= this.ship.fireSpeed) {
+				this.bullets.push(this.ship.shoot2());
+				this.ship.fireCooldown = this.ship.fireSpeed / 2;
+			}
 
 			if (input.isDown("spacebar") && this.ship.fireCooldown >= this.ship.fireSpeed) {
 				this.bullets.push(this.ship.shoot());
