@@ -53,6 +53,9 @@ var GameState = State.extend({
 		generateLvl: function () {
 			// calculate the number of asteroid to create
 			var num = Math.round(10 * Math.atan(this.lvl / 25)) + 3;
+			
+			// calculate the number of walls to create
+			var num2 = Math.round(10 * Math.atan(this.lvl / 25)) + 3;
 
 			// set ship position
 			this.ship.x = this.canvasWidth / 2;
@@ -82,6 +85,32 @@ var GameState = State.extend({
 				// push to array
 				this.asteroids.push(astr);
 			}
+			
+			// create walls dynamically create and push to array
+			this.walls = [];
+			for (var i = 0; i < num2; i++) {
+				// choose wall polygon randomly
+				var n = Math.round(Math.random() * (Points.WALL.length - 1));
+				
+				// set position close to edges of canvas
+				var x = 0,
+				y = 0;
+				if (Math.random() > 0.5) {
+					x = Math.random() * this.canvasWidth;
+					y = 80 * Math.random()
+				} else {
+					y = Math.random() * this.canvasHeight;
+					x = 80 * Math.random()
+				}
+				// actual creating of wall
+				var wall = new Asteroid(Points.WALL[n], 50, x, y);
+				wall.maxX = this.canvasWidth;
+				wall.maxY = this.canvasHeight;
+				console.log(n, x, y);
+				// push to array
+				this.walls.push(wall);
+			}
+			
 		},
 
 		/**
@@ -236,6 +265,10 @@ var GameState = State.extend({
 			// draw all asteroids and bullets
 			for (var i = 0, len = this.asteroids.length; i < len; i++) {
 				this.asteroids[i].draw(ctx);
+			}
+			// draw all walls
+			for (var i = 0, len = this.walls.length; i < len; i++) {
+				this.walls[i].draw(ctx);
 			}
 			for (var i = 0, len = this.bullets.length; i < len; i++) {
 				this.bullets[i].draw(ctx);
