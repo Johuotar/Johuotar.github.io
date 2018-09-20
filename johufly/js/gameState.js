@@ -307,6 +307,29 @@ var GameState = State.extend({
 						i--;
 					}
 				}
+				
+				// check if asteroid hits the walls
+				for (var j = 0, len3 = this.asteroids.length; j < len3; j++) {
+					var c = this.asteroids[j];
+
+					if (c == null || a == null) {
+						return;
+						console.log("asteroid wall hit check, either one was null, skipped");
+					}
+					if (a.hasPoint(c.x, c.y)) {// TODO: Asteroids should bounce off in right angle
+						c.vel = {
+							x: c.vel.x / -1,
+							y: c.vel.y / -1
+						}
+						c.x += c.vel.x * 5;
+						c.y += c.vel.y * 5;
+						
+						
+						len3--;
+						j--;
+						i--;
+					}
+				}
 			}
 			
 		},

@@ -61,7 +61,8 @@ var Asteroid = Polygon.extend({
 			// update position
 			this.x += this.vel.x;
 			this.y += this.vel.y;
-
+			
+			/*
 			// keep within bounds
 			if (this.x > this.maxX) {
 				this.x = 0;
@@ -72,7 +73,7 @@ var Asteroid = Polygon.extend({
 				this.y = 0;
 			} else if (this.y < 0) {
 				this.y = this.maxY;
-			}
+			}*/
 			// rotate asteroids
 			this.rotate(this.rotAngle);
 		},

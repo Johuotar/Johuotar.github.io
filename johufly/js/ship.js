@@ -157,9 +157,12 @@ var Ship = Polygon.extend({
 			this.vel.y *= 0.99;
 
 			//ship falls by its gravity
-			this.vel.y += this.gravity;
-
-			// keep within bounds
+			if (this.visible) {
+				this.vel.y += this.gravity;
+			}
+			
+			/*
+			// keep within sane bounds NOTE: IRRELEVANT AS OF 20.9.2018
 			if (this.x > this.maxX) {
 				this.x = this.maxX;
 				this.vel.x = 0;
@@ -173,7 +176,7 @@ var Ship = Polygon.extend({
 			} else if (this.y < 0) {
 				this.y = 0;
 				this.vel.y = 0;
-			}
+			}*/
 		},
 
 		/**
