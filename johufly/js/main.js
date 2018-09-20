@@ -18,7 +18,7 @@ var Game = Class.extend({
 	 */
 	init: function() {
 		// public important members used for update and rendering
-		this.canvas = new Canvas(1024, 820);
+		this.canvas = new Canvas(1024, 768);
 
 		this.input = new InputHandeler({
 			left:     37,

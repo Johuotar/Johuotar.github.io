@@ -88,6 +88,7 @@ var GameState = State.extend({
 			
 			// create random walls dynamically and push to array
 			this.walls = [];
+			/*
 			for (var i = 0; i < num2; i++) {
 				// choose wall polygon randomly
 				var n = Math.round(Math.random() * (Points.WALL.length - 1));
@@ -110,7 +111,7 @@ var GameState = State.extend({
 				// push to array
 				this.walls.push(wall);
 			}
-			
+			*/
 			// create the map border walls and push to the earlier wall array
 			var x = 0,
 			y = 0;
@@ -123,7 +124,7 @@ var GameState = State.extend({
 				currentlevel = 1;
 			}
 			// actual creating of map
-			var map = new Wall(Points.MAPS[currentlevel], 18, x, y);
+			var map = new Wall(Points.MAPS[currentlevel], 10, x, y);
 			map.maxX = this.canvasWidth;
 			map.maxY = this.canvasHeight;
 			console.log(x, y);
@@ -346,12 +347,15 @@ var GameState = State.extend({
 			ctx.translate(this.canvasWidth / 2 - this.ship.x, this.canvasHeight / 2 - this.ship.y);//camera follows ship effect
 			
 			// draw ship
+			ctx.strokeStyle ="#FF0000";
 			this.ship.draw(ctx);
+			ctx.strokeStyle = 'blue';
 			// draw all wall pieces and map sections
 			for (var i = 0, len = this.walls.length; i < len; i++) {
 				this.walls[i].draw(ctx);
 			}
 			// draw all asteroids
+			ctx.strokeStyle = 'yellow';
 			for (var i = 0, len = this.asteroids.length; i < len; i++) {
 				this.asteroids[i].draw(ctx);
 			}// draw all bullets
