@@ -55,7 +55,7 @@ var GameState = State.extend({
 			var num = Math.round(10 * Math.atan(this.lvl / 25)) + 3;
 			
 			// calculate the number of walls to create
-			var num2 = Math.round(10 * Math.atan(this.lvl / 25)) + 3;
+			var num2 = Math.round(10 * Math.atan(this.lvl / 25)) + 1;
 
 			// set ship position
 			this.ship.x = this.canvasWidth / 2;
@@ -86,7 +86,7 @@ var GameState = State.extend({
 				this.asteroids.push(astr);
 			}
 			
-			// create walls dynamically create and push to array
+			// create random walls dynamically and push to array
 			this.walls = [];
 			for (var i = 0; i < num2; i++) {
 				// choose wall polygon randomly
@@ -103,7 +103,7 @@ var GameState = State.extend({
 					x = 80 * Math.random()
 				}
 				// actual creating of wall
-				var wall = new Asteroid(Points.WALL[n], 50, x, y);
+				var wall = new Wall(Points.WALL[n], 25, x, y);
 				wall.maxX = this.canvasWidth;
 				wall.maxY = this.canvasHeight;
 				console.log(n, x, y);
@@ -111,6 +111,24 @@ var GameState = State.extend({
 				this.walls.push(wall);
 			}
 			
+			// create the map border walls and push to the earlier wall array
+			var x = 0,
+			y = 0;
+			// set position centered
+			x = this.canvasWidth / 2;
+			y = this.canvasHeight / 2;
+			
+			var currentlevel = 0;//TODO: make more than 2 maps
+			if (Math.random() > 0.5) {
+				currentlevel = 1;
+			}
+			// actual creating of map
+			var map = new Wall(Points.MAPS[currentlevel], 18, x, y);
+			map.maxX = this.canvasWidth;
+			map.maxY = this.canvasHeight;
+			console.log(x, y);
+			// push to array
+			this.walls.push(map);
 		},
 
 		/**
@@ -309,13 +327,13 @@ var GameState = State.extend({
 			for (var i = 0; i < this.ship.hp; i++) {
 				ctx.drawPolygon(this.hppolygon, 40 + 5 * i, 45);
 			}
+			// draw all wall pieces and map sections
+			for (var i = 0, len = this.walls.length; i < len; i++) {
+				this.walls[i].draw(ctx);
+			}
 			// draw all asteroids and bullets
 			for (var i = 0, len = this.asteroids.length; i < len; i++) {
 				this.asteroids[i].draw(ctx);
-			}
-			// draw all walls
-			for (var i = 0, len = this.walls.length; i < len; i++) {
-				this.walls[i].draw(ctx);
 			}
 			for (var i = 0, len = this.bullets.length; i < len; i++) {
 				this.bullets[i].draw(ctx);
