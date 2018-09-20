@@ -124,7 +124,7 @@ var GameState = State.extend({
 				currentlevel = 1;
 			}
 			// actual creating of map
-			var map = new Wall(Points.MAPS[currentlevel], 10, x, y);
+			var map = new Wall(Points.MAPS[currentlevel], 20, x, y);
 			map.maxX = this.canvasWidth;
 			map.maxY = this.canvasHeight;
 			console.log(x, y);
@@ -347,18 +347,21 @@ var GameState = State.extend({
 			ctx.translate(this.canvasWidth / 2 - this.ship.x, this.canvasHeight / 2 - this.ship.y);//camera follows ship effect
 			
 			// draw ship
-			ctx.strokeStyle ="#FF0000";
+			ctx.strokeStyle = 'yellow';
 			this.ship.draw(ctx);
-			ctx.strokeStyle = 'blue';
+			
 			// draw all wall pieces and map sections
+			ctx.strokeStyle = 'blue';
 			for (var i = 0, len = this.walls.length; i < len; i++) {
 				this.walls[i].draw(ctx);
 			}
 			// draw all asteroids
-			ctx.strokeStyle = 'yellow';
+			ctx.strokeStyle = 'white';
 			for (var i = 0, len = this.asteroids.length; i < len; i++) {
 				this.asteroids[i].draw(ctx);
+			
 			}// draw all bullets
+			ctx.strokeStyle = 'red';
 			for (var i = 0, len = this.bullets.length; i < len; i++) {
 				this.bullets[i].draw(ctx);
 			}
@@ -366,13 +369,18 @@ var GameState = State.extend({
 			ctx.restore();
 			
 			// draw UI: score, extra lives, hp and game over message
-			ctx.vectorText(this.score, 3, 35, 15);
-			for (var i = 0; i < this.lives; i++) {
-				ctx.drawPolygon(this.lifepolygon, 40 + 17 * i, 85);
-			}
+			ctx.strokeStyle = 'green';
+			
+			ctx.vectorText(this.score, 3, 120, 45);
+			
 			for (var i = 0; i < this.ship.hp; i++) {
-				ctx.drawPolygon(this.hppolygon, 40 + 5 * i, 45);
+				ctx.drawPolygon(this.hppolygon, 40 + 5 * i, 95);
 			}
+			
+			for (var i = 0; i < this.lives; i++) {
+				ctx.drawPolygon(this.lifepolygon, 40 + 17 * i, 55);
+			}
+			
 			if (this.gameOver) {
 				ctx.vectorText("Game Over", 4, null, null);
 			}
