@@ -79,11 +79,13 @@ var Ship = Polygon.extend({
 		},
 
 		/**
-		 * Returns whether ship is colling with asteroid and a lot of other collision things
-		 *
+		 * Returns whether ship is colling with poly
+		 * Could be removed if the overridden collide func in polygon class is improved to work with ships. 21.9.2018
+		 * Javascript has no overloading, so the last one overrides the previous function
 		 * @param  {Asteroid} astr asteroid to test
 		 * @return {Boolean}       result from test
 		 */
+		
 		collide: function (astr) {
 			// don't test if not visible
 			if (!this.visible) {

@@ -46,6 +46,29 @@ var Polygon = Class.extend({
 				this.points[i] *= c;
 			}
 		},
+		
+		/**
+		 * Returns whether poly is colliding with other one
+		 * TODO: Improve and make more use of this function
+		 * @param  {poly} the other poly to test
+		 * @return {Boolean}       result from test
+		 */
+		collide: function (poly) {
+			// don't test if the object no longer exists, bullet destroyed it etc
+			if (poly == null) {
+				return false;
+				console.log("poly collide function target was null, return false");
+			}
+			for (var i = 0, len = this.points.length - 2; i < len; i += 2) {
+				var x = this.points[i] + this.x;
+				var y = this.points[i + 1] + this.y;
+
+				if (poly.hasPoint(x, y)) {
+					return true;
+				}
+			}
+			return false;
+		},
 
 		/**
 		 * Useful point in polygon check, taken from:
