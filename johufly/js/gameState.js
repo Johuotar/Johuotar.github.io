@@ -74,9 +74,13 @@ var GameState = State.extend({
 			
 			// init wreckage parts array
 			this.parts = [];
+			
+			// init container array
+			this.containers = [];
 
 			// dynamically create asteroids and push to array
 			this.asteroids = [];
+			
 			for (var i = 0; i < num; i++) {
 				// choose asteroid polygon randomly
 				var n = Math.round(Math.random() * (Points.ASTEROIDS.length - 1));
@@ -141,6 +145,15 @@ var GameState = State.extend({
 			console.log(x, y);
 			// push to array
 			this.walls.push(map);
+			
+			//create a container
+			var container = new Container(Points.CRATE, 6, this.canvasWidth / 2 + 180, this.canvasHeight / 2 + 120);
+			container.maxX = this.canvasWidth;
+			container.maxY = this.canvasHeight;
+			console.log("container at" + x, y)
+			//push to containers array which holds containers
+			this.containers.push(container);
+			
 		},
 
 		/**
@@ -162,7 +175,13 @@ var GameState = State.extend({
 				}
 				return;
 			}
-
+			
+			if (input.isDown("control")) {
+				this.ship.drawTractorbeam = true;
+			}
+			else{
+				this.ship.drawTractorbeam = false;
+			}
 			if (input.isDown("right")) {
 				this.ship.rotate(0.06);
 			}
@@ -237,17 +256,42 @@ var GameState = State.extend({
 		 * @override State.update
 		 */
 		update: function () {
+			//iterate thru and update all containers
+			for (var i = 0, len = this.containers.length; i < len; i++) {
+				var a = this.containers[i];
+				a.update();
+			}
+				// if ship collides with container
+				if (this.ship.collide(a)) {
+					if ( this.ship.ammo < 101){
+						this.ship.ammo += 100;
+					}
+					if (this.ship.hp < 51) {
+						this.ship.hp += 50;
+					}
+				}
+				// if tractorbeam collides with container
+				if (this.ship.tractorbeam(a) && this.ship.drawTractorbeam == true) {
+					a.vel.x = this.ship.vel.x;
+					a.vel.y = this.ship.vel.y;
+				}
+			
 			// iterate thru and update all asteroids
 			for (var i = 0, len = this.asteroids.length; i < len; i++) {
 				var a = this.asteroids[i];
 				a.update();
 
-				// if ship collides
+				// if ship collides to asteroid
 				if (this.ship.collide(a)) {
 					this.ship.hp--;
 					if (this.ship.hp <= 0) {
 						this.destroy(this.ship);
 					}
+				}
+				// if tractorbeam collides with asteroid
+				if (this.ship.tractorbeam(a) && this.ship.drawTractorbeam == true) {
+					a.vel.x = this.ship.vel.x;
+					a.vel.y = this.ship.vel.y;
 				}
 
 				// check if bullets hits the current asteroid
@@ -349,6 +393,21 @@ var GameState = State.extend({
 						this.destroy(this.ship);
 					}
 				}
+				
+				// check if containers hits the walls
+				for (var j = 0, len2 = this.containers.length; j < len2; j++) {
+					var b = this.containers[j];
+					if (b.collide(a)) {
+						b.vel = {
+							x: b.vel.x * -0.5,
+							y: b.vel.y * -0.5
+						}
+						b.x += b.vel.x * 2;
+						b.y += b.vel.y * 2;
+						//j--;
+						//i--;
+					}
+				}
 
 				// check if bullets hits the walls
 				for (var j = 0, len2 = this.bullets.length; j < len2; j++) {
@@ -424,12 +483,12 @@ var GameState = State.extend({
 			this.ship.draw(ctx);
 			
 			// draw all wall pieces and map sections
-			ctx.strokeStyle = 'blue';
+			ctx.strokeStyle = 'white';
 			for (var i = 0, len = this.walls.length; i < len; i++) {
 				this.walls[i].draw(ctx);
 			}
 			// draw all asteroids
-			ctx.strokeStyle = 'white';
+			ctx.strokeStyle = 'blue';
 			for (var i = 0, len = this.asteroids.length; i < len; i++) {
 				this.asteroids[i].draw(ctx);
 			
@@ -439,9 +498,14 @@ var GameState = State.extend({
 				this.bullets[i].draw(ctx);
 			}
 			// draw all wreckage parts
-			ctx.strokeStyle = 'white';
+			ctx.strokeStyle = 'yellow';
 			for (var i = 0, len = this.parts.length; i < len; i++) {
 				this.parts[i].draw(ctx);
+			}
+			// draw all containers
+			ctx.strokeStyle = 'yellow';
+			for (var i = 0, len = this.containers.length; i < len; i++) {
+				this.containers[i].draw(ctx);
 			}
 			
 			ctx.restore();

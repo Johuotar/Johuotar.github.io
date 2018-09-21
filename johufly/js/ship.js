@@ -28,6 +28,7 @@ var Ship = Polygon.extend({
 			// visual flags
 			this.drawFlames = false;
 			this.visible = true;
+			this.drawTractorbeam = false;
 
 			// position vars
 			this.x = x;
@@ -50,10 +51,14 @@ var Ship = Polygon.extend({
 
 			// max hitpoints AKA maxhp
 			this.maxhp = 100;
-
-			// gravity
-			this.gravity = 0.015;
 			
+			// tractorbeam
+			this.tractorbeamLength = 80;
+
+			// gravity and weight of carried object
+			this.gravity = 0.015;
+			this.weight = 0.0;
+
 			//cooldown
 			this.fireSpeed = 10;
 			this.fireCooldown = 0;
@@ -68,11 +73,13 @@ var Ship = Polygon.extend({
 			// ammo
 			this.ammo = 200;
 			
+			// max ammo AKA maxammo
+			this.maxammo = 200;
+
 		},
-		
 
 		/**
-		 * Returns whether ship is colling with asteroid
+		 * Returns whether ship is colling with asteroid and a lot of other collision things
 		 *
 		 * @param  {Asteroid} astr asteroid to test
 		 * @return {Boolean}       result from test
@@ -97,6 +104,29 @@ var Ship = Polygon.extend({
 			}
 			return false;
 		},
+		
+		/**
+		 * Returns whether ship's tractorbeam is colliding with object
+		 *
+		 * @param  {obj} object to test
+		 * @return {Boolean}       result from test
+		 */
+		tractorbeam: function (obj) {
+			if ( this.drawTractorbeam == true) {
+				// don't test if not visible or if the object no longer exists, bullet destroyed it etc
+				if (!this.visible || obj == null) {
+					console.log("Tractor beam func beam returned false because testable object was null or ship was not visible.");
+					this.weight = 0.0;
+					return false;
+				}
+				if (obj.hasPoint(this.x , this.y + this.tractorbeamLength)) {
+					this.weight = 0.030;
+					return obj;
+				}
+				this.weight = 0.0;
+			}
+			return false;
+		},
 
 		/**
 		 * Create and return bullet with arguments from current
@@ -111,7 +141,7 @@ var Ship = Polygon.extend({
 			b.maxY = this.maxY;
 			return b;
 		},
-		
+
 		shoot2: function () {
 			this.ammo--;
 			var b = new Bullet(this.points[0] + this.x, this.points[1] + this.y, this.angle + this.angleshift);
@@ -122,8 +152,6 @@ var Ship = Polygon.extend({
 			b.maxY = this.maxY;
 			return b;
 		},
-		
-		
 
 		/**
 		 * Update the velocity of the bullet depending on facing
@@ -159,7 +187,7 @@ var Ship = Polygon.extend({
 		update: function () {
 			//update cooldown
 			this.fireCooldown++;
-			
+
 			// update position
 			this.x += this.vel.x;
 			this.y += this.vel.y;
@@ -169,24 +197,24 @@ var Ship = Polygon.extend({
 
 			//ship falls by its gravity
 			if (this.visible) {
-				this.vel.y += this.gravity;
+				this.vel.y += this.gravity + this.weight;
 			}
-			
+
 			/*
 			// keep within sane bounds NOTE: IRRELEVANT AS OF 20.9.2018
 			if (this.x > this.maxX) {
-				this.x = this.maxX;
-				this.vel.x = 0;
+			this.x = this.maxX;
+			this.vel.x = 0;
 			} else if (this.x < 0) {
-				this.x = 0;
-				this.vel.x = 0;
+			this.x = 0;
+			this.vel.x = 0;
 			}
 			if (this.y > this.maxY) {
-				this.y = this.maxY
-				this.vel.y = 0;
+			this.y = this.maxY
+			this.vel.y = 0;
 			} else if (this.y < 0) {
-				this.y = 0;
-				this.vel.y = 0;
+			this.y = 0;
+			this.vel.y = 0;
 			}*/
 		},
 
@@ -205,5 +233,13 @@ var Ship = Polygon.extend({
 				ctx.drawPolygon(this.flames, this.x, this.y);
 				this.drawFlames = false;
 			}
+			if (this.drawTractorbeam) {
+				ctx.strokeStyle = 'white';
+				ctx.beginPath();
+				ctx.moveTo(this.x, this.y);
+				ctx.lineTo(this.x, this.y + this.tractorbeamLength);
+				ctx.stroke();
+			}
+			
 		}
 	});
