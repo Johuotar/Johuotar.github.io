@@ -58,10 +58,13 @@ var Ship = Polygon.extend({
 			this.fireSpeed = 10;
 			this.fireCooldown = 0;
 			
+			// acceleration
+			this.acceleration = 0.07;
+
 			//angle is random when firing second firetype
 			this.angleshift = Math.random() - 0.4
-			this.angleshift *= Math.floor(Math.random()*2) == 1 ? 1 : -1; // this will add minus sign in 50% of cases
-			
+			this.angleshift *= Math.floor(Math.random() * 2) == 1 ? 1 : -1; // this will add minus sign in 50% of cases
+
 			// ammo
 			this.ammo = 200;
 			
@@ -114,7 +117,7 @@ var Ship = Polygon.extend({
 			var b = new Bullet(this.points[0] + this.x, this.points[1] + this.y, this.angle + this.angleshift);
 			//angle of bullets changes
 			this.angleshift = Math.random() - 0.4
-			this.angleshift *= Math.floor(Math.random()*2) == 1 ? 1 : -1; // 50% chance of minus sign
+				this.angleshift *= Math.floor(Math.random() * 2) == 1 ? 1 : -1; // 50% chance of minus sign
 			b.maxX = this.maxX;
 			b.maxY = this.maxY;
 			return b;
@@ -131,8 +134,8 @@ var Ship = Polygon.extend({
 			// theorem, i.e.
 			// 		a*a + b*b = c*c
 			if (this.vel.x * this.vel.x + this.vel.y * this.vel.y < 20 * 20) {
-				this.vel.x += 0.05 * Math.cos(this.angle);
-				this.vel.y += 0.05 * Math.sin(this.angle);
+				this.vel.x += this.acceleration * Math.cos(this.angle);
+				this.vel.y += this.acceleration * Math.sin(this.angle);
 			}
 			this.drawFlames = true;
 		},
