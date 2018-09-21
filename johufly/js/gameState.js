@@ -67,7 +67,7 @@ var GameState = State.extend({
 			this.ship.rotate(-Math.PI / 2);
 			
 			this.ship.ammo = 200;
-			this.ship.hp = 100;
+			this.ship.hp = this.ship.maxhp;
 
 			// init bullet array
 			this.bullets = [];

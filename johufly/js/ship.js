@@ -46,7 +46,10 @@ var Ship = Polygon.extend({
 			}
 
 			// hitpoints AKA hp
-			this.hp = 100;
+			this.hp = 20;
+			
+			// max hitpoints AKA maxhp
+			this.maxhp = 20;
 
 			// gravity
 			this.gravity = 0.015;
