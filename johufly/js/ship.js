@@ -195,6 +195,7 @@ var Ship = Polygon.extend({
 			}
 			ctx.drawPolygon(this, this.x, this.y);
 			if (this.drawFlames) {
+				ctx.strokeStyle = 'red';
 				ctx.drawPolygon(this.flames, this.x, this.y);
 				this.drawFlames = false;
 			}
