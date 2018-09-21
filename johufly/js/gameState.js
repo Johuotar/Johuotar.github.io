@@ -64,8 +64,10 @@ var GameState = State.extend({
 			// set ship position
 			this.ship.x = this.canvasWidth / 2;
 			this.ship.y = this.canvasHeight / 2;
+			this.ship.rotate(-Math.PI / 2);
 			
 			this.ship.ammo = 200;
+			this.ship.hp = 100;
 
 			// init bullet array
 			this.bullets = [];
