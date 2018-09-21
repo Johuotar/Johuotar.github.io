@@ -27,6 +27,10 @@ var Bullet = Class.extend({
 				x: 8 * Math.cos(angle),
 				y: 8 * Math.sin(angle)
 			}
+			
+			// bullet gravity
+			this.gravity = 0.03;
+			
 		},
 
 		/**
@@ -47,6 +51,9 @@ var Bullet = Class.extend({
 			// translate position
 			this.x += this.vel.x;
 			this.y += this.vel.y;
+			
+			//apply gravity
+			this.vel.y += this.gravity;
 		},
 
 		/**

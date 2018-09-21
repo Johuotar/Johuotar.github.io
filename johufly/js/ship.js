@@ -59,6 +59,9 @@ var Ship = Polygon.extend({
 			this.angleshift = Math.random() - 0.4
 			this.angleshift *= Math.floor(Math.random()*2) == 1 ? 1 : -1; // this will add minus sign in 50% of cases
 			
+			// ammo
+			this.ammo = 200;
+			
 		},
 		
 
@@ -96,6 +99,7 @@ var Ship = Polygon.extend({
 		 * @return {Bullet} the initated bullet
 		 */
 		shoot: function () {
+			this.ammo--;
 			var b = new Bullet(this.points[0] + this.x, this.points[1] + this.y, this.angle);
 			b.maxX = this.maxX;
 			b.maxY = this.maxY;
@@ -103,6 +107,7 @@ var Ship = Polygon.extend({
 		},
 		
 		shoot2: function () {
+			this.ammo--;
 			var b = new Bullet(this.points[0] + this.x, this.points[1] + this.y, this.angle + this.angleshift);
 			//angle of bullets changes
 			this.angleshift = Math.random() - 0.4

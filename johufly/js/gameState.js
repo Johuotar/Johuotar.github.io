@@ -42,6 +42,10 @@ var GameState = State.extend({
 			// create hppolygon
 			this.hppolygon = new Polygon(Points.HP);
 			this.hppolygon.scale(0.75);
+			
+			// create ammopolygon
+			this.ammopolygon = new Polygon(Points.AMMO);
+			this.ammopolygon.scale(0.50);
 
 			// generate asteroids and set ship position
 			this.generateLvl();
@@ -60,6 +64,8 @@ var GameState = State.extend({
 			// set ship position
 			this.ship.x = this.canvasWidth / 2;
 			this.ship.y = this.canvasHeight / 2;
+			
+			this.ship.ammo = 200;
 
 			// init bullet array
 			this.bullets = [];
@@ -162,12 +168,12 @@ var GameState = State.extend({
 				this.ship.addVel();
 			}
 			
-			if (input.isDown("shift") && this.ship.fireCooldown >= this.ship.fireSpeed) {
+			if (input.isDown("shift") && this.ship.fireCooldown >= this.ship.fireSpeed && this.ship.ammo > 0) {
 				this.bullets.push(this.ship.shoot2());
 				this.ship.fireCooldown = this.ship.fireSpeed / 2;
 			}
 
-			if (input.isDown("spacebar") && this.ship.fireCooldown >= this.ship.fireSpeed) {
+			if (input.isDown("spacebar") && this.ship.fireCooldown >= this.ship.fireSpeed && this.ship.ammo > 0) {
 				this.bullets.push(this.ship.shoot());
 				this.ship.fireCooldown = 0;
 			}
@@ -368,17 +374,28 @@ var GameState = State.extend({
 			
 			ctx.restore();
 			
-			// draw UI: score, extra lives, hp and game over message
+			//Draw velocity and location for test purposes
+			ctx.strokeStyle = 'white';
+			ctx.strokeText(this.ship.vel.x, 10, 85);
+			ctx.strokeText(this.ship.vel.y, 10, 100);
+			ctx.strokeText(this.ship.x, 10, 115);
+			ctx.strokeText(this.ship.y, 10, 130);
+			
+			// draw UI: score, extra lives, hp, ammo and game over message
 			ctx.strokeStyle = 'green';
 			
-			ctx.vectorText(this.score, 3, 120, 45);
+			ctx.vectorText(this.score, 3, 120, 20);
 			
 			for (var i = 0; i < this.ship.hp; i++) {
-				ctx.drawPolygon(this.hppolygon, 40 + 5 * i, 95);
+				ctx.drawPolygon(this.hppolygon, 20 + 5 * i, 50);
+			}
+			
+			for (var i = 0; i < this.ship.ammo; i++) {
+				ctx.drawPolygon(this.ammopolygon, 20 + 5 * i, 70);
 			}
 			
 			for (var i = 0; i < this.lives; i++) {
-				ctx.drawPolygon(this.lifepolygon, 40 + 17 * i, 55);
+				ctx.drawPolygon(this.lifepolygon, 20 + 15 * i, 35);
 			}
 			
 			if (this.gameOver) {
