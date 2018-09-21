@@ -46,10 +46,10 @@ var Ship = Polygon.extend({
 			}
 
 			// hitpoints AKA hp
-			this.hp = 20;
-			
+			this.hp = 100;
+
 			// max hitpoints AKA maxhp
-			this.maxhp = 20;
+			this.maxhp = 100;
 
 			// gravity
 			this.gravity = 0.015;
@@ -59,7 +59,7 @@ var Ship = Polygon.extend({
 			this.fireCooldown = 0;
 			
 			// acceleration
-			this.acceleration = 0.07;
+			this.acceleration = 0.065;
 
 			//angle is random when firing second firetype
 			this.angleshift = Math.random() - 0.4

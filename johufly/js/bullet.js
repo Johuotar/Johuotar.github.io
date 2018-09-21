@@ -24,12 +24,12 @@ var Bullet = Class.extend({
 
 			// set velocity according to angle param
 			this.vel = {
-				x: 8 * Math.cos(angle),
-				y: 8 * Math.sin(angle)
+				x: 11 * Math.cos(angle),
+				y: 11 * Math.sin(angle)
 			}
 			
 			// bullet gravity
-			this.gravity = 0.03;
+			this.gravity = 0.02;
 			
 		},
 
