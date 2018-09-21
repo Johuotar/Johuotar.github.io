@@ -71,6 +71,9 @@ var GameState = State.extend({
 
 			// init bullet array
 			this.bullets = [];
+			
+			// init wreckage parts array
+			this.parts = [];
 
 			// dynamically create asteroids and push to array
 			this.asteroids = [];
@@ -155,7 +158,7 @@ var GameState = State.extend({
 						this.game.stateVars.score = this.score;
 						return;
 					}
-					this.ship.visible = true;
+					this.respawn(this.ship);
 				}
 				return;
 			}
@@ -180,6 +183,55 @@ var GameState = State.extend({
 				this.ship.fireCooldown = 0;
 			}
 		},
+		
+		/**
+		 * destroy ship function
+		 * spawns wreckage parts too
+		 */
+		destroy: function (destroyedShip) {
+			
+			if (destroyedShip == null) {
+				return;
+				console.log("Ship that was to be destroyed does not exists anymore. Was the function called twice?");
+			}
+			for (var i = 0; i < 6; i++) {
+				var n = Math.round(Math.random() * (Points.PART.length - 1));
+				var p = new Part(Points.PART[n], 3 ,destroyedShip.x, destroyedShip.y, destroyedShip.vel.x, destroyedShip.vel.y);
+				this.parts.push(p);
+				console.log("parts should have spawned by now to location x.y");
+				console.log(p.x, p.y)
+				p.maxX = this.maxX;
+				p.maxY = this.maxY;
+			}
+			destroyedShip.visible = false;
+		},
+		
+		/**
+		 * respawn ship function
+		 * called soon after the ship goes boom
+		 */
+		respawn: function (respawningShip) {
+			
+			if (respawningShip == null) {
+				return;
+				console.log("Ship that was to be respawned does not exists anymore. Was the function called twice?");
+			}
+			
+			respawningShip.x = this.canvasWidth / 2;
+			respawningShip.y = this.canvasHeight / 2;
+			respawningShip.vel = {
+				x: 0,
+				y: 0
+			}
+			respawningShip.rotate(-Math.PI / 2);
+			this.ship.visible = true;
+			this.lives--;
+			this.ship.hp = this.ship.maxhp;
+			this.ship.ammo = 200;
+			if (this.lives <= 0) {
+				this.gameOver = true;
+			}
+		},
 
 		/**
 		 * @override State.update
@@ -194,17 +246,7 @@ var GameState = State.extend({
 				if (this.ship.collide(a)) {
 					this.ship.hp--;
 					if (this.ship.hp <= 0) {
-						this.ship.x = this.canvasWidth / 2;
-						this.ship.y = this.canvasHeight / 2;
-						this.ship.vel = {
-							x: 0,
-							y: 0
-						}
-						this.lives--;
-						if (this.lives <= 0) {
-							this.gameOver = true;
-						}
-						this.ship.visible = false;
+						this.destroy(this.ship);
 					}
 				}
 
@@ -267,6 +309,20 @@ var GameState = State.extend({
 					i--;
 				}
 			}
+			
+			// iterate thru and update all wreckage parts
+			for (var i = 0, len = this.parts.length; i < len; i++) {
+				var p = this.parts[i];
+				p.update();
+
+				// remove parts if removeflag is setted
+				if (p.shallRemove) {
+					this.parts.splice(i, 1);
+					len--;
+					i--;
+				}
+			}
+			
 			// update ship
 			this.ship.update();
 
@@ -283,21 +339,14 @@ var GameState = State.extend({
 				// if ship collides to wall
 				if (this.ship.collide(a)) {
 					this.ship.hp--;
-					this.ship.vel.x = 0;
-					this.ship.vel.y = 0;
+					this.ship.vel = {
+							x: this.ship.vel.x * -0.5,
+							y: this.ship.vel.y * -0.5
+						}
+						this.ship.x += this.ship.vel.x * 2;
+						this.ship.y += this.ship.vel.y * 2;
 					if (this.ship.hp <= 0) {
-						this.ship.x = this.canvasWidth / 2;
-						this.ship.y = this.canvasHeight / 2;
-						this.ship.vel = {
-							x: 0,
-							y: 0
-						}
-						this.lives--;
-						this.ship.hp = 100;
-						if (this.lives <= 0) {
-							this.gameOver = true;
-						}
-						this.ship.visible = false;
+						this.destroy(this.ship);
 					}
 				}
 
@@ -330,10 +379,26 @@ var GameState = State.extend({
 							x: c.vel.x / -1,
 							y: c.vel.y / -1
 						}
-						c.x += c.vel.x * 5;
-						c.y += c.vel.y * 5;
+						c.x += c.vel.x * 2;
+						c.y += c.vel.y * 2;
 						
 						
+						len3--;
+						j--;
+						i--;
+					}
+				}
+				
+				// check if wreckage part hits the walls
+				for (var j = 0, len4 = this.parts.length; j < len4; j++) {
+					var p = this.parts[j];
+
+					if (p == null || a == null) {
+						return;
+						console.log("part wall hit check, target was null, skipped");
+					}
+					if (a.hasPoint(p.x, p.y)) {//remove the part
+						this.parts.splice(j, 1);
 						len3--;
 						j--;
 						i--;
@@ -372,6 +437,11 @@ var GameState = State.extend({
 			ctx.strokeStyle = 'red';
 			for (var i = 0, len = this.bullets.length; i < len; i++) {
 				this.bullets[i].draw(ctx);
+			}
+			// draw all wreckage parts
+			ctx.strokeStyle = 'white';
+			for (var i = 0, len = this.parts.length; i < len; i++) {
+				this.parts[i].draw(ctx);
 			}
 			
 			ctx.restore();
