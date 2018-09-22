@@ -49,6 +49,9 @@ var GameState = State.extend({
 
 			// generate asteroids and set ship position
 			this.generateLvl();
+			
+			//sounds
+			var soundExplosion = new Audio("js\\explosion.wav");
 		},
 
 		/**
@@ -223,6 +226,7 @@ var GameState = State.extend({
 				p.maxY = this.maxY;
 			}
 			destroyedShip.visible = false;
+			this.soundExplosion.play();
 		},
 		
 		/**
