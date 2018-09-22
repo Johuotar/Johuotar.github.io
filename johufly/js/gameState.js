@@ -51,7 +51,13 @@ var GameState = State.extend({
 			this.generateLvl();
 			
 			//sounds
-			var soundExplosion = new Audio("js\\explosion.wav");
+			this.soundExplosion =  new Audio("js\\explosion.wav");
+			this.soundZap =  new Audio("js\\zap.wav");
+			this.soundWhoosh =  new Audio("js\\whoosh.wav");
+			this.soundLose =  new Audio("js\\lose.wav");
+			this.soundRestored =  new Audio("js\\restored.wav");
+			
+			
 		},
 
 		/**
@@ -193,16 +199,19 @@ var GameState = State.extend({
 			}
 			if (input.isDown("up")) {
 				this.ship.addVel();
+				this.soundWhoosh.play();
 			}
 			
 			if (input.isDown("shift") && this.ship.fireCooldown >= this.ship.fireSpeed && this.ship.ammo > 0) {
 				this.bullets.push(this.ship.shoot2());
 				this.ship.fireCooldown = this.ship.fireSpeed / 2;
+				this.soundZap.play();
 			}
 
 			if (input.isDown("spacebar") && this.ship.fireCooldown >= this.ship.fireSpeed && this.ship.ammo > 0) {
 				this.bullets.push(this.ship.shoot());
 				this.ship.fireCooldown = 0;
+				this.soundZap.play();
 			}
 		},
 		
@@ -253,6 +262,7 @@ var GameState = State.extend({
 			this.ship.ammo = 200;
 			if (this.lives <= 0) {
 				this.gameOver = true;
+				this.soundLose.play();
 			}
 		},
 
@@ -269,9 +279,11 @@ var GameState = State.extend({
 				if (this.ship.collide(a)) {
 					if ( this.ship.ammo < 101){
 						this.ship.ammo += 100;
+						this.soundRestored.play();
 					}
 					if (this.ship.hp < 51) {
 						this.ship.hp += 50;
+						this.soundRestored.play();
 					}
 				}
 				// if tractorbeam collides with container
