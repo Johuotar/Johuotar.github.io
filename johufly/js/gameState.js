@@ -515,7 +515,6 @@ var GameState = State.extend({
 				this.walls[i].draw(ctx);
 			}
 			// draw all asteroids
-			ctx.strokeStyle = 'blue';
 			for (var i = 0, len = this.asteroids.length; i < len; i++) {
 				this.asteroids[i].draw(ctx);
 			
