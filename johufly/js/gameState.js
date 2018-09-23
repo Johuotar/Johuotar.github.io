@@ -51,11 +51,14 @@ var GameState = State.extend({
 			this.generateLvl();
 			
 			//sounds
-			this.soundExplosion =  new Audio("js\\explosion.wav");
-			this.soundZap =  new Audio("js\\zap.wav");
-			this.soundWhoosh =  new Audio("js\\whoosh.wav");
-			this.soundLose =  new Audio("js\\lose.wav");
-			this.soundRestored =  new Audio("js\\restored.wav");
+			this.soundExplosion = new Audio("js\\explosion.wav");
+			this.soundZap = new Audio("js\\zap.wav");
+			this.soundWhoosh = new Audio("js\\whoosh.wav");
+			this.soundLose = new Audio("js\\lose.wav");
+			this.soundRestored = new Audio("js\\restored.wav");
+			this.soundCrash = new Audio("js\\crash.wav");
+			this.soundHploss = new Audio("js\\hploss.wav");
+			this.soundTractorbeam = new Audio("js\\tractorbeam.wav");
 			
 			
 		},
@@ -187,9 +190,11 @@ var GameState = State.extend({
 			
 			if (input.isDown("control")) {
 				this.ship.drawTractorbeam = true;
+				this.soundTractorbeam.play();
 			}
 			else{
 				this.ship.drawTractorbeam = false;
+				this.soundTractorbeam.pause();
 			}
 			if (input.isDown("right")) {
 				this.ship.rotate(0.06);
@@ -277,12 +282,12 @@ var GameState = State.extend({
 			}
 				// if ship collides with container
 				if (this.ship.collide(a)) {
-					if ( this.ship.ammo < 101){
-						this.ship.ammo += 100;
+					if ( this.ship.ammo < this.ship.maxammo){
+						this.ship.ammo = this.ship.maxammo;
 						this.soundRestored.play();
 					}
-					if (this.ship.hp < 51) {
-						this.ship.hp += 50;
+					if (this.ship.hp < this.ship.maxhp) {
+						this.ship.hp = this.ship.maxhp;
 						this.soundRestored.play();
 					}
 				}
@@ -300,6 +305,7 @@ var GameState = State.extend({
 				// if ship collides to asteroid
 				if (this.ship.collide(a)) {
 					this.ship.hp--;
+					this.soundHploss.play();
 					if (this.ship.hp <= 0) {
 						this.destroy(this.ship);
 					}
@@ -374,13 +380,6 @@ var GameState = State.extend({
 			for (var i = 0, len = this.parts.length; i < len; i++) {
 				var p = this.parts[i];
 				p.update();
-
-				// remove parts if removeflag is setted
-				if (p.shallRemove) {
-					this.parts.splice(i, 1);
-					len--;
-					i--;
-				}
 			}
 			
 			// update ship
@@ -398,20 +397,24 @@ var GameState = State.extend({
 
 				// if ship collides to wall
 				if (this.ship.collide(a)) {
-					this.ship.hp--;
+					var speed = Math.abs(this.ship.vel.x) + Math.abs(this.ship.vel.y);
+					if (speed > 1.0) {
+						this.ship.hp -= speed * 2;
+						this.soundCrash.play();
+						if (this.ship.hp <= 0) {
+							this.destroy(this.ship);
+						}
+					}
 					this.ship.vel = {
-							x: this.ship.vel.x * -0.5,
-							y: this.ship.vel.y * -0.5
+							x: this.ship.vel.x * -0.75,
+							y: this.ship.vel.y * -0.75
 						}
 						this.ship.x += this.ship.vel.x * 2;
 						this.ship.y += this.ship.vel.y * 2;
-					if (this.ship.hp <= 0) {
-						this.destroy(this.ship);
-					}
 				}
 				
 				// check if containers hits the walls
-				for (var j = 0, len2 = this.containers.length; j < len2; j++) {
+				for (var j = 0, len = this.containers.length; j < len; j++) {
 					var b = this.containers[j];
 					if (b.collide(a)) {
 						b.vel = {
@@ -426,7 +429,7 @@ var GameState = State.extend({
 				}
 
 				// check if bullets hits the walls
-				for (var j = 0, len2 = this.bullets.length; j < len2; j++) {
+				for (var j = 0, len = this.bullets.length; j < len; j++) {
 					var b = this.bullets[j];
 
 					if (a == null) {
@@ -435,14 +438,14 @@ var GameState = State.extend({
 					}
 					if (a.hasPoint(b.x, b.y)) {
 						this.bullets.splice(j, 1);
-						len2--;
+						len--;
 						j--;
 						i--;
 					}
 				}
 				
 				// check if asteroid hits the walls
-				for (var j = 0, len3 = this.asteroids.length; j < len3; j++) {
+				for (var j = 0, len = this.asteroids.length; j < len; j++) {
 					var c = this.asteroids[j];
 
 					if (c == null || a == null) {
@@ -456,27 +459,35 @@ var GameState = State.extend({
 						}
 						c.x += c.vel.x * 2;
 						c.y += c.vel.y * 2;
-						
-						
-						len3--;
+						len--;
 						j--;
 						i--;
 					}
 				}
 				
 				// check if wreckage part hits the walls
-				for (var j = 0, len4 = this.parts.length; j < len4; j++) {
+				for (var j = 0, len = this.parts.length; j < len; j++) {
 					var p = this.parts[j];
 
 					if (p == null || a == null) {
 						return;
 						console.log("part wall hit check, target was null, skipped");
 					}
-					if (a.hasPoint(p.x, p.y)) {//remove the part
-						this.parts.splice(j, 1);
-						len3--;
-						j--;
-						i--;
+					if (a.hasPoint(p.x, p.y)) { //either set for removal at next crash or remove if true
+						if ( p.hasCrashed == false){
+							console.log("part crashed for first time.")
+							p.hasCrashed = true;
+							p.vel = {
+								x: p.vel.x * -0.5,
+								y: p.vel.y * -0.5
+							}
+							p.x += p.vel.x * 2;
+							p.y += p.vel.y * 2;
+						}
+						else {
+							this.parts.splice(j, 1);
+							console.log("part crashed for second time and is removed.")
+						}
 					}
 				}
 			}
@@ -534,20 +545,31 @@ var GameState = State.extend({
 			ctx.strokeText(this.ship.y, 10, 130);
 			
 			// draw UI: score, extra lives, hp, ammo and game over message
+			for (var i = 0; i < this.ship.hp; i++) {
+				if (i <= 10) {
+					ctx.strokeStyle = 'red';
+				}
+				else if (i <= 25) {
+					ctx.strokeStyle = 'yellow';
+				}
+				else{
+					ctx.strokeStyle = 'green';
+				}
+				ctx.drawPolygon(this.hppolygon, 20 + 5 * i, 50);
+			}
+			
 			ctx.strokeStyle = 'green';
 			
 			ctx.vectorText(this.score, 3, 120, 20);
 			
-			for (var i = 0; i < this.ship.hp; i++) {
-				ctx.drawPolygon(this.hppolygon, 20 + 5 * i, 50);
+			for (var i = 0; i < this.lives; i++) {
+				ctx.drawPolygon(this.lifepolygon, 20 + 15 * i, 35);
 			}
+			
+			ctx.strokeStyle = 'white';
 			
 			for (var i = 0; i < this.ship.ammo; i++) {
 				ctx.drawPolygon(this.ammopolygon, 20 + 5 * i, 70);
-			}
-			
-			for (var i = 0; i < this.lives; i++) {
-				ctx.drawPolygon(this.lifepolygon, 20 + 15 * i, 35);
 			}
 			
 			if (this.gameOver) {

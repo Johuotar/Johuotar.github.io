@@ -45,7 +45,7 @@ var Part = Polygon.extend({
 			// gravity
 			this.gravity = 0.015;
 			
-			this.shallRemove = false;
+			this.hasCrashed = false;
 			
 		},
 
