@@ -52,29 +52,42 @@ var Ship = Polygon.extend({
 			// max hitpoints AKA maxhp
 			this.maxhp = 50;
 			
-			// tractorbeam
-			this.tractorbeamLength = 80;
+			// fuel
+			this.fuel = 40.0;
+
+			// max fuel
+			this.maxfuel = 40.0;
+
+			// max velocity
+			this.maxvel = 5.5;
+			
+			// tractorbeam lenght, status and end point
+			this.tractorbeamLength = 75;
+			this.carryingObject = false;
+			this.tractorbeamX;
+			this.tractorbeamY;
+			this.tractorbeamGravity = 4
 
 			// gravity and weight of carried object
 			this.gravity = 0.015;
-			this.weight = 0.0;
+			this.weight = 0.030;
 
 			//cooldown
-			this.fireSpeed = 20;
+			this.fireSpeed = 30;
 			this.fireCooldown = 0;
 			
 			// acceleration
-			this.acceleration = 0.095;
+			this.acceleration = 0.05;
 
 			//angle is random when firing second firetype
 			this.angleshift = Math.random() - 0.4
 			this.angleshift *= Math.floor(Math.random() * 2) == 1 ? 1 : -1; // this will add minus sign in 50% of cases
 
 			// ammo
-			this.ammo = 200;
+			this.ammo = 100;
 			
 			// max ammo AKA maxammo
-			this.maxammo = 200;
+			this.maxammo = 100;
 
 		},
 
@@ -93,8 +106,8 @@ var Ship = Polygon.extend({
 			}
 			// don't test if the object no longer exists, bullet destroyed it etc
 			if (astr == null) {
+				console.log("ship collide function target was null, return false");
 				return false;
-				console.log("collide function target was null, return false");
 			}
 			for (var i = 0, len = this.points.length - 2; i < len; i += 2) {
 				var x = this.points[i] + this.x;
@@ -118,14 +131,11 @@ var Ship = Polygon.extend({
 				// don't test if not visible or if the object no longer exists, bullet destroyed it etc
 				if (!this.visible || obj == null) {
 					console.log("Tractor beam func beam returned false because testable object was null or ship was not visible.");
-					this.weight = 0.0;
 					return false;
 				}
-				if (obj.hasPoint(this.x , this.y + this.tractorbeamLength)) {
-					this.weight = 0.030;
+				if (obj.hasPoint(this.tractorbeamX, this.tractorbeamY)) {
 					return obj;
 				}
-				this.weight = 0.0;
 			}
 			return false;
 		},
@@ -160,14 +170,27 @@ var Ship = Polygon.extend({
 		 * direction
 		 */
 		addVel: function () {
-			// length of veloctity vector estimated with pythagoras
-			// theorem, i.e.
-			// 		a*a + b*b = c*c
+			// length of velocity vector estimated with pythagoras
+			// theorem, i.e. a*a + b*b = c*c
 			if (this.vel.x * this.vel.x + this.vel.y * this.vel.y < 20 * 20) {
 				this.vel.x += this.acceleration * Math.cos(this.angle);
 				this.vel.y += this.acceleration * Math.sin(this.angle);
+				//Limit the max speed
+				if(this.vel.x > this.maxvel){
+					this.vel.x = this.maxvel
+				}
+				else if(this.vel.x < -this.maxvel){
+					this.vel.x = -this.maxvel
+				}
+				if(this.vel.y > this.maxvel){
+					this.vel.y = this.maxvel
+				}
+				else if(this.vel.y < -this.maxvel){
+					this.vel.y = -this.maxvel
+				}
 			}
 			this.drawFlames = true;
+			this.fuel -= 0.01;
 		},
 
 		/**
@@ -194,32 +217,36 @@ var Ship = Polygon.extend({
 			this.x += this.vel.x;
 			this.y += this.vel.y;
 
-			this.vel.x *= 0.99;
-			this.vel.y *= 0.99;
+			this.vel.x *= 0.995;
+			this.vel.y *= 0.995;
 
-			//ship falls by its gravity
+			//ship falls by its gravity and weight of carried object
 			if (this.visible) {
-				this.vel.y += this.gravity + this.weight;
+				if (this.carryingObject) {
+					this.vel.y += this.gravity + this.weight;
+				}
+				else {
+					this.vel.y += this.gravity;
+				}
 			}
-
-			/*
-			// keep within sane bounds NOTE: IRRELEVANT AS OF 20.9.2018
-			if (this.x > this.maxX) {
-			this.x = this.maxX;
-			this.vel.x = 0;
-			} else if (this.x < 0) {
-			this.x = 0;
-			this.vel.x = 0;
+			
+			dx = this.tractorbeamX - this.x
+			dy = this.tractorbeamY - this.y
+			var distance = Math.sqrt(dx * dx + dy * dy);
+			if (distance > this.tractorbeamLength){
+				var dxl = dx * ( 1 - this.tractorbeamLength / distance )
+				var dyl = dy * ( 1 - this.tractorbeamLength / distance )
+				this.tractorbeamX -= dxl
+				this.tractorbeamY -= dyl
 			}
-			if (this.y > this.maxY) {
-			this.y = this.maxY
-			this.vel.y = 0;
-			} else if (this.y < 0) {
-			this.y = 0;
-			this.vel.y = 0;
-			}*/
+			//Apply gravity to tractorbeam
+			if (this.carryingObject) {
+				this.tractorbeamY += this.tractorbeamGravity + this.weight;
+			}
+			else {
+				this.tractorbeamY += this.tractorbeamGravity
+			}
 		},
-
 		/**
 		 * Draw the ship with an augmented drawing context
 		 *
@@ -230,16 +257,16 @@ var Ship = Polygon.extend({
 				return;
 			}
 			ctx.drawPolygon(this, this.x, this.y);
-			if (this.drawFlames) {
+			if (this.drawFlames) {//draw the flames if engine on
 				ctx.strokeStyle = 'red';
 				ctx.drawPolygon(this.flames, this.x, this.y);
 				this.drawFlames = false;
 			}
-			if (this.drawTractorbeam) {
+			if (this.drawTractorbeam) {//draw tractorbeam if on
 				ctx.strokeStyle = 'white';
 				ctx.beginPath();
 				ctx.moveTo(this.x, this.y);
-				ctx.lineTo(this.x, this.y + this.tractorbeamLength);
+				ctx.lineTo(this.tractorbeamX, this.tractorbeamY);
 				ctx.stroke();
 			}
 			

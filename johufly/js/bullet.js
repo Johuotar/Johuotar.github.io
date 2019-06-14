@@ -41,13 +41,6 @@ var Bullet = Class.extend({
 			this.prevx = this.x;
 			this.prevy = this.y;
 
-			/*
-			// inside bounds check
-			if (0 > this.x || this.x > this.maxX ||
-				0 > this.y || this.y > this.maxY) {
-				this.shallRemove = true;
-			}*/
-
 			// translate position
 			this.x += this.vel.x;
 			this.y += this.vel.y;

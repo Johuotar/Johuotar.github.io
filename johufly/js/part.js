@@ -76,23 +76,7 @@ var Part = Polygon.extend({
 			this.vel.y *= 0.99;
 
 			// falls by its gravity
-
 			this.vel.y += this.gravity;
-
-			
-			
-			/*
-			// keep within bounds
-			if (this.x > this.maxX) {
-				this.x = 0;
-			} else if (this.x < 0) {
-				this.x = this.maxX;
-			}
-			if (this.y > this.maxY) {
-				this.y = 0;
-			} else if (this.y < 0) {
-				this.y = this.maxY;
-			}*/
 			// rotate parts
 			this.rotate(this.rotAngle);
 		},
