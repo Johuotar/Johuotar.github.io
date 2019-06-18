@@ -1,8 +1,7 @@
 # Johuotar.github.io
 
-Johuotar's Github Gamesite:
+Link to the website:
 https://johuotar.github.io/
 
 Contents:
-Godot project
-JavaScript project
+Rpg created with Godot, 2D Cave flyer created with JavaScript.
