@@ -1,41 +1,71 @@
+/* CSS used on index/home page */
+
 body, html {
     height: 100%;
     margin: 0;
   }
   
-  .bg-overlay {
-    background: linear-gradient(
-    rgba(0, 0, 0, 0.5),
-    rgba(0, 0, 0, 0.5)
-    ), url("../images/bg.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center center;
-    color: #fff;
-    padding-top: 50px;
-    height: 50%;
-  }
+.bg-overlay {
+  background: linear-gradient(
+  rgba(0, 0, 0, 0.5),
+  rgba(0, 0, 0, 0.5)
+  ), url("../images/bg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  color: #fff;
+  padding-top: 50px;
+  height: 50%;
+}
 
-  .bg-no-overlay {
-    background: url("../images/bg.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center center;
-    color: #fff;
-    padding-top: 50px;
-    height: 50%;
-  }
+.bg-no-overlay {
+  background: url("../images/bg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  color: #fff;
+  padding-top: 50px;
+  height: 50%;
+}
 
-  .title {
-    background-color: black;
-    color: #fff;
-    display: inline;
-    padding: 0.2rem;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-  }
+.title {
+  background-color: black;
+  color: #fff;
+  display: inline;
+  padding: 0.2rem;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
 
-  .infobox {
-    background-color: rgb(255, 230, 0);
-    padding: 5px;
-  }
+.infobox {
+  background-color: rgb(255, 230, 0);
+  padding: 5px;
+}
+
+/* CSS for pictures page */
+
+.container.gallery-container {
+  background-color: #fff;
+  color: #35373a;
+  min-height: 90vh;
+  padding: 20px 20px;
+}
+
+.gallery-title {
+  text-align: center;
+  margin-top: 50px;
+  font-family: 'Droid Sans', sans-serif;
+  font-weight: bold;
+}
+
+/* Override bootstrap column paddings */
+
+.tz-gallery .row > div {
+  padding: 2px;
+}
+
+.tz-gallery .lightbox img {
+  width: 100%;
+  border-radius: 0;
+  position: relative;
+}
