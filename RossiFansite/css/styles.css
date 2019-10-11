@@ -74,6 +74,31 @@ body, html {
   padding-bottom: 5px;
 }
 
+footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.footer-color{
+  background-color: #770911;
+  color: #fff;
+}
+
+.footer-link-color{
+  color: #fff;
+}
+
+.footer-link-color:hover{
+  color: #fff;
+}
+
+.footer-line {
+  width:100%;
+  height:1px;
+  background: #fff;
+}
+
 /* CSS for pictures page */
 
 .container.gallery-container {
