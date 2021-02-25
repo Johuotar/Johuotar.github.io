@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+
+<meta charset="UTF-8">
+
+<body>
+
+<canvas id="progress" height="150" width="800"></canvas>
+
+<audio id="audio" ontimeupdate="updateBar()" 
+       src="Bassstreet.wav">
+</audio>
+
+<br>
+<span id="current-time"></span> /
+<span id="duration"></span>
+<br>
+<button id="audioControl" onclick="togglePlaying()">Play</button>
+
+<script src="audioplayer.js"></script>
+
+</body>
+
+</html> 
