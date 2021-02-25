@@ -3,6 +3,9 @@
 Game project website:
 https://johuotar.github.io/
 
+Soundcloud type audio player:
+https://johuotar.github.io/audioplayer/index.html
+
 Valentino Rossi Fansite:
 https://johuotar.github.io/RossiFansite/index.html
 
