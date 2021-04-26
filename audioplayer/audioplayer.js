@@ -133,4 +133,6 @@ const drawLineSegment = (ctx, x, height) => {
   ctx.stroke();
 };
 
-drawAudio('https://johuotar.github.io/audioplayer/Bassstreet.Wav');
+//drawAudio('https://johuotar.github.io/audioplayer/Bassstreet.Wav');
+// random MP3 from the Internet Archive, which allows cross-origin requests.
+drawAudio('http://ia902606.us.archive.org/35/items/shortpoetry_047_librivox/song_cjrg_teasdale_64kb.mp3');
