@@ -133,4 +133,4 @@ const drawLineSegment = (ctx, x, height) => {
   ctx.stroke();
 };
 
-drawAudio('http://localhost:8000/Bassstreet.Wav');
+drawAudio('https://johuotar.github.io/audioplayer/Bassstreet.Wav');
