@@ -1,20 +1,336 @@
 <!doctype html>
 <html lang="en">
-<link rel="stylesheet" type="text/css" href="index.css">
+<!-- meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Chart.js plugin for showing price history -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- CSS -->
+<link rel="stylesheet" type="text/css" href="css/styles.css"/>
+
 <head>
-	<meta charset="UTF-8">
-	<title>Johuotar's Gamesite</title>
+    <title>
+        BitTracker
+    </title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
 </head>
+
 <body>
-<h1>Games available:</h2>
-<nav>
-	<ul>
-		<a href="johufly/index.html"><img src="johuflypicture.png" class="grow" title="Johufly" alt="Johufly Screenshot"></a>
-		<a href="godotrpg/index.html"><img src="rpgpicture.png" class="grow" title="Unnamed RPG" alt="RPG Screenshot"></a>
-	</ul>
-</nav>
-<p>Games have been tested to work on Firefox browser 67.0.2 (2019)</p>
-<hr>
-<h3>Very special thanks to Max Wihlborg for beginner's html/JS game project files used in JOHUFLY.</h1>
+    
+    <!-- Navigation top bar -->
+    <nav class="centered">
+        <div id="navbar">
+            <h1>BitTracker - Helpful BitCoin value tracking tool</h1>
+        </div>
+    </nav>
+    <!-- Navigation top bar ends -->
+
+    <!-- Select time range -->
+    <div class="time">
+        <p>Choose time range:</p>
+        <label for="start">Start date:</label>
+        <input type="date" id="startdate" name="start"
+            value="" min="2013-04-28" max="2027-01-01">
+        
+        <label for="end">End date:</label>
+        <input type="date" id="enddate" name="end"
+            value="" min="2013-04-28" max="2027-01-01">
+
+        <br><br>
+        <button class="interactable" onclick="getData()">Get data</button>
+    </div>
+        <!-- Time selection ends -->
+
+    <div class="centered">
+        <!-- Errors-->
+        <p id="error_ele" class="result"></p>
+        <!-- Results -->
+        <p id="bearish_ele" class="result">
+            Longest bearish, AKA downwards trend in days during the selected time period is X days.
+        </p>
+
+        <p id="volume_value_ele" class="result">
+            Highest trading volume in euros during selected time period is X € on day Y.
+        </p>
+
+        <p id="best_dates_ele" class="result">
+            Best theoretical days to buy and sell in the selected time period are X and Y.
+        </p>
+    </div>
+
+    <div class="chart">
+        <p class="desc">
+            Bitcoin value during selected time period.
+        </p>
+        <div>
+            <canvas id="ChartCanvas"></canvas>
+        </div>
+
+        <br>
+        <p class="desc">
+            Bitcoin trading volume during selected time period.
+        </p>
+        <div>
+            <canvas id="VolumeChartCanvas"></canvas>
+        </div>
+
+        <!-- Results end -->
+
+        <!-- Footer -->
+        <footer class = "centered">
+            <div>
+            <p>Bitcoin Tracker 2021 - This website does not use cookies. All rights belong to their respective owners.</p>
+            </div>
+        </footer>
+        <!-- Footer ends-->
+    </div>
+
 </body>
 </html>
+
+<script>
+    var formatter = new Intl.NumberFormat('de-DE', {
+    style: 'currency',
+    currency: 'EUR',
+    });
+    
+    //Price chart setup
+    const labels = [];
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: 'Bitcoin value in €',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [],
+        }]
+    };
+    //Price chart config
+    const config = {
+        type: 'line',
+        data: data,
+        options: {}
+    };
+    //Price chart rendering
+    const PriceChart = new Chart(
+        document.getElementById('ChartCanvas'),
+        config
+    );
+
+    //Volume chart setup
+    const volumeData = {
+        labels: labels,
+        datasets: [{
+            label: 'Bitcoin trade volume in €',
+            backgroundColor: 'rgb(0, 0, 255)',
+            borderColor: 'rgb(0, 0, 255)',
+            data: [],
+        }]
+    };
+    //Volume chart config
+    const configVolume = {
+        type: 'line',
+        data: volumeData,
+        options: {}
+    };
+    //Volume Chart rendering
+    const VolumeChart = new Chart(
+        document.getElementById('VolumeChartCanvas'),
+        configVolume
+    );
+
+    var errorEle = document.getElementById("error_ele");
+    var Ele1 = document.getElementById("bearish_ele");
+    var Ele2 = document.getElementById("volume_value_ele");
+    var Ele3 = document.getElementById("best_dates_ele");
+
+    var getJSON = function(url, callback) {
+    
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'json';
+    
+        xhr.onload = function() {
+    
+            var status = xhr.status;
+    
+            if (status == 200) {
+                callback(null, xhr.response);
+            } else {
+                callback(status);
+            }
+        };
+    
+        xhr.send();
+    };
+
+    var difference = function (a, b) { return Math.abs(a - b); } // get diff of two values to find closest time point to midnights
+    
+    function getData() {
+        let startDate = document.getElementById('startdate').value
+        let endDate = document.getElementById('enddate').value
+        if (startDate > endDate) {
+            errorEle.innerHTML = "WARNING: Set the start date to be before the end date."
+            console.log("WARNING: Set the start date to be before the end date.")
+            return
+        }
+        else {
+            errorEle.innerHTML = ""
+        }
+        //Reset price and volume data so we don't use the old data to fill the charts and get the information
+        data.datasets[0]["data"] = []
+        volumeData.datasets[0]["data"] = []
+        // empty the labels array so we don't use the old data
+        labels.length = 0
+        let address = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from="
+        startDate = new Date(startDate).getTime() / 1000
+        // get the last days data as well, which may go over to the next day by few minutes
+        // 90000 (25 hours), 3600 (one hour)
+        endDate = new Date(endDate).getTime() / 1000 + 90000
+        address = address.concat(startDate, "&to=", endDate)
+        //Add 3600 to the ranges end parameter to get the values at end point by adding +1 hour. so for a day it would be 25 values, 0 - 24.
+
+        getJSON(address,  function(err, receivedData) {
+        if (err != null) {
+            console.error(err);
+        } else {
+            let data_str = JSON.stringify(receivedData);
+            let data_prices_str = JSON.stringify(receivedData["prices"]);
+            let data_market_caps_str = JSON.stringify(receivedData["market_caps"]);
+            let data_total_volumes_str = JSON.stringify(receivedData["total_volumes"]);
+            let prices = receivedData["prices"];
+            let volumes = receivedData["total_volumes"]
+            //prices is array of arrays which has first the time in unix time and then the actual value. Ex. [ 1637175613629, 53723.26420170224 ]
+            let s_per_day = 24*3600;
+            let ms_until_midnight = s_per_day - startDate % s_per_day;
+            let midnights = [] // all midnights between start and end time. Not the actual available data points but the targets we want to get close to
+            let keepGoing = true
+            let currentNight = startDate + ms_until_midnight
+
+            while (keepGoing == true) {
+                if (currentNight < endDate) {
+                    midnights.push(currentNight*1000) //multiply by 1000 due to ms being 1/1000 of second
+                    currentNight = currentNight + s_per_day
+                }
+                else {
+                    keepGoing = false
+                }
+            }
+
+            //Gather time points and prices closest to every midnight during time selection
+            let closestTimePoints = [] //timepoints closest to the midnigths that we want data from
+            let dailyPrices = []
+            let dailyVolumes = []
+            for (let i = 0; i < midnights.length; i++) {
+
+                let previousDiff = null
+                let currentDiff = null
+                let nextDiff = null
+                for (let u = 0; u < prices.length; u++) {
+                    // Use difference to find closest value to midnights
+                    if (u != 0 && closestTimePoints.length <= i) {
+                        if(u + 1 >= prices.length) {
+                            previousDiff = difference(midnights[i], prices[u-1][0])
+                            currentDiff = difference(midnights[i], prices[u][0])
+                            if (previousDiff < currentDiff){
+                                closestTimePoints.push(prices[u-1][0])
+                                dailyPrices.push(prices[u-1][1])
+                                dailyVolumes.push(volumes[u-1][1])
+                            }
+                            else {
+                                closestTimePoints.push(prices[u][0])
+                                dailyPrices.push(prices[u][1])
+                                dailyVolumes.push(volumes[u][1])
+                            }
+                        }
+                        else {
+                            previousDiff = difference(midnights[i], prices[u-1][0])
+                            currentDiff = difference(midnights[i], prices[u][0])
+                            nextDiff = difference(midnights[i], prices[u+1][0])
+                            if (previousDiff > currentDiff && currentDiff < nextDiff){
+                                closestTimePoints.push(prices[u][0])
+                                dailyPrices.push(prices[u][1])
+                                dailyVolumes.push(volumes[u][1])
+                            }
+                        }
+                    }
+                }
+            }
+
+            // update charts
+            for (let i = 0; i < closestTimePoints.length; i++) {
+                var date = new Date(closestTimePoints[i]);
+                // Add the date as UTC format string to the charts label array
+                data.datasets[0]["data"].push(dailyPrices[i])
+                labels.push(date.toUTCString())
+                volumeData.datasets[0]["data"].push(dailyVolumes[i])
+            }
+            PriceChart.update();
+            VolumeChart.update();
+
+            // Get longest bearish trend in days and the start and end date of the trend
+            let previousPrice = 0;
+            let trendLength = 0;
+            let trendLengthMax = 0;
+            let trendIndex = 0;
+            for (let i = 0; i < dailyPrices.length; i++) {
+                if (previousPrice != 0) {
+                    if (previousPrice > dailyPrices[i]) {
+                        trendLength++;
+                        if (trendLength > trendLengthMax) {
+                            trendLengthMax = trendLength
+                            trendIndex = i
+                        }
+                    }
+                    else {
+                        trendLength = 0
+                    }
+                }
+                previousPrice = dailyPrices[i]
+            }
+
+            // Get day with highest trading volume in euros
+            let highestTradingDay = null
+            let highestTradingVolume = 0
+            for (let i = 0; i < dailyVolumes.length; i++) {
+                if (dailyVolumes[i] > highestTradingVolume) {
+                    highestTradingVolume = dailyVolumes[i]
+                    highestTradingDay = labels[i]
+                }
+            }
+            
+            // Get theoretical best days to buy and sell Bitcoin during selected time period by getting and comparing value increase multipliers
+            let highestMultiplier = 0.0
+            let startEndDate = []
+            for (let i = 0; i < dailyPrices.length; i++) {
+                for (let x = i+1; x < dailyPrices.length; x++) {
+                    if (dailyPrices[x] / dailyPrices[i] > highestMultiplier) {
+                        highestMultiplier = dailyPrices[x] / dailyPrices[i]
+                        startEndDate = [i, x]
+                    }
+                }
+            }
+            let date1, date2
+            var date = new Date(closestTimePoints[startEndDate[0]]);
+            date1 = date.toUTCString()
+            date = new Date(closestTimePoints[startEndDate[1]]);
+            date2 = date.toUTCString()
+            
+            // Set longest bearish trend to the element 1
+            Ele1.innerHTML = "Longest bearish, AKA downwards trend in days during the selected time period is " + trendLengthMax + " days, starting from " + labels[trendIndex - trendLengthMax] + " and ending on " + labels[trendIndex];
+            
+            // Set day with highest trading volume to element 2
+            Ele2.innerHTML = "Highest trading volume in Euros during the selected time period was on " + highestTradingDay + " with value of " + formatter.format(highestTradingVolume);
+
+            // Set best days to buy and sell Bitcoin to element 3
+            Ele3.innerHTML = "Best days to buy and sell during the selected time period was to buy on " + date1 + " and sell on " + date2 + " with price being multiplied by " + highestMultiplier;
+            
+        }
+    });
+
+    }
+
+    </script>
