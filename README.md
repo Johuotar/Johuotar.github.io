@@ -14,3 +14,6 @@ https://johuotar.github.io/audioplayer/index.html
 
 Valentino Rossi Fansite:
 https://johuotar.github.io/RossiFansite/index.html
+
+Bitcoin price and trade volume site:
+https://johuotar.github.io/BitTracker/
