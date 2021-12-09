@@ -1,9 +1,6 @@
 (function() { // (Immediately invoked function execution, IIFE) Being anonymous function, it avoids polluting the global scope.
     //The function can be invoked only once since it has no name, but this function is meant to be executed only once anyway.
 
-    // Formatter for Euro values to make reading them easier.
-    let formatter = new Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR',});
-
     //Price chart setup
     const labels = [];
     const data = {
@@ -49,11 +46,18 @@
         configVolume
     );
 
-    let elementErrorMessage = document.getElementById("error_ele");
-    let elementBearishTrend = document.getElementById("bearish_ele");
-    let elementTradingVolume = document.getElementById("volume_value_ele");
-    let elementBuySellDays = document.getElementById("best_dates_ele");
-
+    // Formatter for Euro values to make reading them easier.
+    let formatter = new Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR',});
+    // Constants
+    const elementErrorMessage = document.getElementById("error_ele");
+    const elementBearishTrend = document.getElementById("bearish_ele");
+    const elementTradingVolume = document.getElementById("volume_value_ele");
+    const elementBuySellDays = document.getElementById("best_dates_ele");
+    const address = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from="
+    // Time selection
+    let startDate = document.getElementById('startdate').value
+    let endDate = document.getElementById('enddate').value
+    
     // Get the button element reference from html
     // First, add eventlistener for content being loaded, this guarantees that code has access to all DOM elements
     document.addEventListener("DOMContentLoaded", function(event) { 
@@ -84,8 +88,6 @@
     let difference = function (a, b) { return Math.abs(a - b); }
 
     function getData() { //The actual function for getting data and presenting it, called when button is pressed
-        let startDate = document.getElementById('startdate').value
-        let endDate = document.getElementById('enddate').value
         if (startDate > endDate) {
             elementErrorMessage.innerHTML = "WARNING: Set the start date to be before the end date."
             console.log("WARNING: Set the start date to be before the end date.")
@@ -99,15 +101,14 @@
         volumeData.datasets[0]["data"] = []
         // empty the labels array so we don't use the old data
         labels.length = 0
-        let address = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from="
         startDate = new Date(startDate).getTime() / 1000
         // get the last days data as well, which may go over to the next day by few minutes
         // 90000 (25 hours), 3600 (one hour)
         endDate = new Date(endDate).getTime() / 1000 + 90000
-        address = address.concat(startDate, "&to=", endDate)
+        let currentAddress = address.concat(startDate, "&to=", endDate)
         // Add time to the ranges end parameter to get the values at end point.
 
-        getJSON(address,  function(err, receivedData) {
+        getJSON(currentAddress,  function(err, receivedData) {
         if (err != null) {
             console.error(err);
         } else {
