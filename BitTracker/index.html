@@ -16,9 +16,7 @@
 <link rel="stylesheet" type="text/css" href="css/styles.css"/>
 
 <head>
-    <title>
-        BitTracker
-    </title>
+    <title>BitTracker</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -26,7 +24,6 @@
 </head>
 
 <body>
-    
     <!-- Navigation top bar -->
     <nav class="centered">
         <div id="navbar">
@@ -36,15 +33,21 @@
     <!-- Navigation top bar ends -->
 
     <!-- Select time range -->
-    <div class="time padding_top">
+    <div class="time padding_top_small">
         <p>Choose time range:</p>
-        <label for="start">Start date:</label>
-        <input type="date" id="startdate" name="start"
-            value="" min="2013-04-28" max="2027-01-01">
-        
-        <label for="end">End date:</label>
-        <input type="date" id="enddate" name="end"
-            value="" min="2013-04-28" max="2027-01-01">
+        <div class="rows">
+            <div class="selection">
+                <label for="start">Start date:</label>
+                <input type="date" id="startdate" name="start"
+                    value="" min="2013-04-28" max="2027-01-01">
+            </div>
+
+            <div class="selection">
+                <label for="end">End date:</label>
+                <input type="date" id="enddate" name="end"
+                    value="" min="2013-04-28" max="2027-01-01">
+            </div>
+        </div>
 
         <br><br>
         <button class="interactable" onclick="getData()">Get data</button>
@@ -52,7 +55,7 @@
         <!-- Time selection ends -->
 
     <div class="centered">
-        <!-- Errors-->
+        <!-- Errors will be shown in error element -->
         <p id="error_ele" class="result"></p>
         <!-- Results -->
         <p id="bearish_ele" class="result">
@@ -87,7 +90,7 @@
         <!-- Results end -->
 
         <!-- Footer -->
-        <div class="padding_top">
+        <div class="padding_top_medium">
             <hr>
             <footer class = "footer">
                 <div>
