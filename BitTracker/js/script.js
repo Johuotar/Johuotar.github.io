@@ -1,5 +1,5 @@
 // Formatter for Euro values to make reading them easier.
-var formatter = new Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR',});
+let formatter = new Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR',});
 
 //Price chart setup
 const labels = [];
@@ -46,18 +46,27 @@ const VolumeChart = new Chart(
     configVolume
 );
 
-var errorEle = document.getElementById("error_ele");
-var Ele1 = document.getElementById("bearish_ele");
-var Ele2 = document.getElementById("volume_value_ele");
-var Ele3 = document.getElementById("best_dates_ele");
+let elementErrorMessage = document.getElementById("error_ele");
+let elementBearishTrend = document.getElementById("bearish_ele");
+let elementTradingVolume = document.getElementById("volume_value_ele");
+let elementBuySellDays = document.getElementById("best_dates_ele");
 
-var getJSON = function(url, callback) {
-    var xhr = new XMLHttpRequest();
+// Get the button element reference from html
+// First, add eventlistener for content being loaded, this guarantees that code has access to all DOM elements
+document.addEventListener("DOMContentLoaded", function(event) { 
+    let button = document.getElementById("getDataButton");
+    // Configure event handler. No () after the function name since it is not being invoked
+    button.addEventListener("click", getData);
+});
+
+let getJSON = function(url, callback) {
+    console.log("Fetching data...")
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'json';
 
     xhr.onload = function() {
-        var status = xhr.status;
+        let status = xhr.status;
 
         if (status == 200) {
             callback(null, xhr.response);
@@ -69,18 +78,18 @@ var getJSON = function(url, callback) {
 };
 
 // get diff of two values to find closest time point to midnights
-var difference = function (a, b) { return Math.abs(a - b); }
+let difference = function (a, b) { return Math.abs(a - b); }
 
-function getData() {
+function getData() { //The actual function for getting data and presenting it, called when button is pressed
     let startDate = document.getElementById('startdate').value
     let endDate = document.getElementById('enddate').value
     if (startDate > endDate) {
-        errorEle.innerHTML = "WARNING: Set the start date to be before the end date."
+        elementErrorMessage.innerHTML = "WARNING: Set the start date to be before the end date."
         console.log("WARNING: Set the start date to be before the end date.")
         return
     }
     else {
-        errorEle.innerHTML = ""
+        elementErrorMessage.innerHTML = ""
     }
     // Reset price and volume data so we don't use the old data to fill the charts and get the information
     data.datasets[0]["data"] = []
@@ -213,23 +222,23 @@ function getData() {
             }
         }
         let buyDay, SellDay
-        var newDate = new Date(closestTimePoints[startEndDate[0]]);
+        let newDate = new Date(closestTimePoints[startEndDate[0]]);
         buyDay = newDate.toUTCString()
         newDate = new Date(closestTimePoints[startEndDate[1]]);
         SellDay = newDate.toUTCString()
         
         // Set longest bearish trend to the element 1
-        Ele1.innerHTML = "Longest bearish, AKA downwards trend in days during the selected time period is " + trendLengthMax + " days, starting from " + labels[trendIndex - trendLengthMax] + " and ending on " + labels[trendIndex];
+        elementBearishTrend.innerHTML = "Longest bearish, AKA downwards trend in days during the selected time period is " + trendLengthMax + " days, starting from " + labels[trendIndex - trendLengthMax] + " and ending on " + labels[trendIndex];
         
         // Set day with highest trading volume to element 2
-        Ele2.innerHTML = "Highest trading volume in Euros during the selected time period was on " + highestTradingDay + " with value of " + formatter.format(highestTradingVolume);
+        elementTradingVolume.innerHTML = "Highest trading volume in Euros during the selected time period was on " + highestTradingDay + " with value of " + formatter.format(highestTradingVolume);
 
         // Set best days to buy and sell Bitcoin to element 3
         if (highestMultiplier <= 1.0) {
-            Ele3.innerHTML = "Bitcoin's price did not increase during selected time period.";
+            elementBuySellDays.innerHTML = "Bitcoin's price did not increase during selected time period.";
         }
         else {
-            Ele3.innerHTML = "Best days to buy and sell during the selected time period was to buy on " + buyDay + " and sell on " + SellDay + " with price being multiplied by " + highestMultiplier;
+            elementBuySellDays.innerHTML = "Best days to buy and sell during the selected time period was to buy on " + buyDay + " and sell on " + SellDay + " with price being multiplied by " + highestMultiplier;
         }
     }
 });

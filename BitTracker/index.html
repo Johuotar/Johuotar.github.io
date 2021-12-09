@@ -1,26 +1,25 @@
 <!doctype html>
 <html lang="en">
-<!-- meta tags -->
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- meta properties shown when site is linked somewhere -->
-<meta property="og:locale" content="en_US" />
-<meta property="og:type" content="website" />
-<meta property="og:title" content="BitTracker" />
-<meta property="og:description" content="Bitcoin value and trade volume tracker." />
-<meta property="og:url" content="https://johuotar.github.io/BitTracker/" />
-<meta property="og:site_name" content="BitTracker" />
-<!-- Chart.js plugin for showing price history -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- CSS -->
-<link rel="stylesheet" type="text/css" href="css/styles.css"/>
-
 <head>
-    <title>BitTracker</title>
+    <!-- meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="BitTracker" />
+    <meta property="og:description" content="Bitcoin value and trade volume tracker." />
+    <meta property="og:url" content="https://johuotar.github.io/BitTracker/" />
+    <meta property="og:site_name" content="BitTracker" />
+    <!-- Chart.js plugin for showing price history -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+
+    <title>BitTracker</title>
 </head>
 
 <body>
@@ -50,7 +49,7 @@
         </div>
 
         <br><br>
-        <button class="interactable" onclick="getData()">Get data</button>
+        <button class="interactable" id="getDataButton">Get data</button>
     </div>
         <!-- Time selection ends -->
 
