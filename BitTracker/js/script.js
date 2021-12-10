@@ -54,9 +54,9 @@
     const elementTradingVolume = document.getElementById("volume_value_ele");
     const elementBuySellDays = document.getElementById("best_dates_ele");
     const address = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from="
-    // Time selection
-    let startDate = document.getElementById('startdate').value
-    let endDate = document.getElementById('enddate').value
+    // Time selection elements
+    let startDateElement = document.getElementById('startdate')
+    let endDateElement = document.getElementById('enddate')
     
     // Get the button element reference from html
     // First, add eventlistener for content being loaded, this guarantees that code has access to all DOM elements
@@ -67,7 +67,6 @@
     });
 
     let getJSON = function(url, callback) {
-        console.log("Fetching data...")
         let xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'json';
@@ -88,6 +87,8 @@
     let difference = function (a, b) { return Math.abs(a - b); }
 
     function getData() { //The actual function for getting data and presenting it, called when button is pressed
+        let startDate = startDateElement.value
+        let endDate = endDateElement.value
         if (startDate > endDate) {
             elementErrorMessage.innerHTML = "WARNING: Set the start date to be before the end date."
             console.log("WARNING: Set the start date to be before the end date.")
