@@ -102,10 +102,10 @@
         volumeData.datasets[0]["data"] = []
         // empty the labels array so we don't use the old data
         labels.length = 0
-        startDate = new Date(startDate).getTime() / 1000
+        startDate = new Date(startDate).getTime() / 1000 - 86400
         // get the last days data as well, which may go over to the next day by few minutes
-        // 90000 (25 hours), 3600 (one hour)
-        endDate = new Date(endDate).getTime() / 1000 + 90000
+        // 90000 (25 hours), 3600 (one hour), 86400 (24 hours)
+        endDate = new Date(endDate).getTime() / 1000 + 3600
         let currentAddress = address.concat(startDate, "&to=", endDate)
         // Add time to the ranges end parameter to get the values at end point.
 
