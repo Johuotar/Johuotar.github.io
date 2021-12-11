@@ -165,8 +165,6 @@
             priceData.datasets[0]["data"].push(dailyPrices[i])
             volumeData.datasets[0]["data"].push(dailyVolumes[i])
         }
-        // update charts
-        updateCharts()
 
         // Get longest bearish trend in days and the start and end date of the trend
         let previousPrice = 0;
@@ -215,7 +213,10 @@
         buyDay = newDate.toUTCString()
         newDate = new Date(closestTimePoints[startEndDate[1]]);
         SellDay = newDate.toUTCString()
-        
+
+        // update charts with price and trade volume information
+        updateCharts()
+        // update text elements with points of interest in the data
         updateInsights(trendLengthMax, trendIndex, highestTradingDay, highestTradingVolume, highestMultiplier, buyDay, SellDay)
     }
 

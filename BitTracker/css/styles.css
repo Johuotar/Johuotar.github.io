@@ -13,9 +13,23 @@
 .rows {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Responsive - makes a one column layout instead of a multi-column layout */
+@media (max-width: 1000px) {
+  .rows {
+    flex-direction: column;
+  }
 }
 
 .selection {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.padding {
   padding-left: 1rem;
   padding-right: 1rem;
 }
