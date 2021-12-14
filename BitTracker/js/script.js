@@ -255,7 +255,7 @@
 
     function updateInsights(trendLengthMax, trendIndex, highestTradingDay, highestTradingVolume, highestMultiplier, buyDay, SellDay) {
         // Set longest bearish trend to the element 1
-        elementBearishTrend.innerHTML = "Longest bearish, AKA downwards trend in days during the selected time period is " + trendLengthMax + " days, starting from " + labels[trendIndex - trendLengthMax] + " and ending on " + labels[trendIndex];
+        elementBearishTrend.innerHTML = "Longest bearish, AKA downwards trend in days during the selected time period is " + trendLengthMax + " days, starting from " + datesUTC[trendIndex - trendLengthMax] + " and ending on " + datesUTC[trendIndex];
         // Set day with highest trading volume to element 2
         elementTradingVolume.innerHTML = "Highest trading volume in Euros during the selected time period was on " + highestTradingDay + " with value of " + formatter.format(highestTradingVolume);
         // Set best days to buy and sell Bitcoin to element 3
