@@ -103,11 +103,10 @@
     }
 
     // Chart data setter
-    function setChartData(closestTimePoints, dailyPrices, dailyVolumes) {
+    function setChartData(closestTimePoints, dailyPrices, dailyVolumes, datesUTC) {
         for (let i = 0; i < closestTimePoints.length; i++) {
-            // Add the date as UTC format string to the charts label array
-            let newDate = new Date(closestTimePoints[i]);
-            labels.push(newDate.toUTCString())
+            // Push the UTC string format dates into the labels array that the two charts use
+            labels.push(datesUTC[i])
             // Add prices and trading volumes to charts datasets
             priceData.datasets[0]["data"].push(dailyPrices[i])
             volumeData.datasets[0]["data"].push(dailyVolumes[i])
@@ -129,6 +128,17 @@
         }
         return midnights
     }
+
+    // Get timepoints
+    function getDatesUTC(closestTimePoints) {
+        var datesUTC = [] // Dates as UTC format string
+        for (let i = 0; i < closestTimePoints.length; i++) {
+            let newDate = new Date(closestTimePoints[i]);
+            datesUTC.push(newDate.toUTCString())
+        }
+        return datesUTC
+    }
+    
 
     function parseData(receivedData, startDate, endDate) { //Use data received from the API
         resetValues() //reset the chart values to original state
@@ -179,8 +189,8 @@
             }
         }
 
-        // Set relevant data to charts labels and datasets
-        setChartData(closestTimePoints, dailyPrices, dailyVolumes)
+        // Get the midnights as UTC dates in string format
+        let datesUTC = getDatesUTC(closestTimePoints)
 
         // Get longest bearish trend in days and the start and end date of the trend
         let previousPrice = 0;
@@ -209,7 +219,7 @@
         for (let i = 0; i < dailyVolumes.length; i++) {
             if (dailyVolumes[i] > highestTradingVolume) {
                 highestTradingVolume = dailyVolumes[i]
-                highestTradingDay = labels[i]
+                highestTradingDay = datesUTC[i]
             }
         }
         
@@ -230,6 +240,8 @@
         newDate = new Date(closestTimePoints[startEndDate[1]]);
         SellDay = newDate.toUTCString()
 
+        // Set relevant data to charts labels and datasets
+        setChartData(closestTimePoints, dailyPrices, dailyVolumes, datesUTC)
         // update charts with price and trade volume information
         updateCharts()
         // update text elements with points of interest in the data
