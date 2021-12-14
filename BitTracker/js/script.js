@@ -57,8 +57,8 @@
     const elementBuySellDays = document.getElementById("best_dates_ele");
     const address = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=eur&from="
     // Time selection elements
-    let startDateElement = document.getElementById('startdate')
-    let endDateElement = document.getElementById('enddate')
+    let startDateElement = document.getElementById('startdate');
+    let endDateElement = document.getElementById('enddate');
     
     // Get the button element reference from html
     // First, add eventlistener for content being loaded, this guarantees that code has access to all DOM elements
@@ -72,8 +72,8 @@
     let difference = function (a, b) { return Math.abs(a - b); }
 
     function getData() { //The actual function for getting data and presenting it, called when button is pressed
-        let startDate = startDateElement.value
-        let endDate = endDateElement.value
+        let startDate = startDateElement.value;
+        let endDate = endDateElement.value;
         if (startDate > endDate) {
             elementErrorMessage.innerHTML = "WARNING: Set the start date to be before the end date."
             console.log("WARNING: Set the start date to be before the end date.")
@@ -87,7 +87,7 @@
         // 3600 (one hour), 86400 (24 hours), 90000 (25 hours)
         // Add time to the ranges end parameter to get the values at end point.
         endDate = new Date(endDate).getTime() / 1000 + s_per_hour
-        let currentAddress = address.concat(startDate, "&to=", endDate)
+        let currentAddress = address.concat(startDate, "&to=", endDate);
         // Fetch the bitcoin data from the application programming interface
         fetch(currentAddress)
         .then(data => data.json())
@@ -115,8 +115,8 @@
 
     // getter for which determines and returns all midnights within time selection
     function getMidnights(currentNight, endDate) {
-        let keepGoing = true
-        let midnights = []
+        let keepGoing = true;
+        let midnights = [];
         while (keepGoing == true) {
             if (currentNight < endDate) {
                 midnights.push(currentNight * 1000) //multiply by 1000 due to ms being 1/1000 of second
@@ -143,20 +143,20 @@
         resetValues() //reset the chart values to original state
         // prices is array of arrays which has first the time in unix time and then the actual value. Ex. [ 1637175613629, 53723.26420170224 ]
         let prices = receivedData["prices"];
-        let volumes = receivedData["total_volumes"]
+        let volumes = receivedData["total_volumes"];
         let ms_until_midnight = s_per_day - startDate % s_per_day;
         // all midnights between start and end time. Not the actual available data points but the targets we want to get close to
-        let currentNight = startDate + ms_until_midnight
-        let midnights = getMidnights(currentNight, endDate)
+        let currentNight = startDate + ms_until_midnight;
+        let midnights = getMidnights(currentNight, endDate);
 
         //Gather time points, prices and trade values closest to every midnight during time selection
-        let closestTimePoints = [] //timepoints closest to the midnigths that we want data from
-        let dailyPrices = []
-        let dailyVolumes = []
+        let closestTimePoints = []; //timepoints closest to the midnigths that we want data from
+        let dailyPrices = [];
+        let dailyVolumes = [];
         for (let i = 0; i < midnights.length; i++) {
-            let previousDiff = null
-            let currentDiff = null
-            let nextDiff = null
+            let previousDiff = null;
+            let currentDiff = null;
+            let nextDiff = null;
             for (let u = 0; u < prices.length; u++) {
                 // Use difference to find closest value to midnights
                 if (u != 0 && closestTimePoints.length <= i) {
@@ -189,7 +189,7 @@
         }
 
         // Get the midnights as UTC dates in string format
-        let datesUTC = getDatesUTC(closestTimePoints)
+        let datesUTC = getDatesUTC(closestTimePoints);
 
         // Get longest bearish trend in days and the start and end date of the trend
         let previousPrice = 0;
@@ -213,8 +213,8 @@
         }
 
         // Get day with highest trading volume in euros
-        let highestTradingDay = null
-        let highestTradingVolume = 0
+        let highestTradingDay = null;
+        let highestTradingVolume = 0;
         for (let i = 0; i < dailyVolumes.length; i++) {
             if (dailyVolumes[i] > highestTradingVolume) {
                 highestTradingVolume = dailyVolumes[i]
@@ -223,8 +223,8 @@
         }
         
         // Get theoretical best days to buy and sell Bitcoin during selected time period by getting and comparing value increase multipliers
-        let highestMultiplier = 0.0
-        let startEndDate = [] //array containing two values, the best days for buying and selling
+        let highestMultiplier = 0.0;
+        let startEndDate = []; //array containing two values, the best days for buying and selling
         for (let i = 0; i < dailyPrices.length; i++) {
             for (let x = i + 1; x < dailyPrices.length; x++) {
                 if (dailyPrices[x] / dailyPrices[i] > highestMultiplier) {
@@ -233,7 +233,7 @@
                 }
             }
         }
-        let buyDay, SellDay
+        let buyDay, SellDay;
         let newDate = new Date(closestTimePoints[startEndDate[0]]);
         buyDay = newDate.toUTCString()
         newDate = new Date(closestTimePoints[startEndDate[1]]);
