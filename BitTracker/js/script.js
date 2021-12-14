@@ -49,6 +49,8 @@
     // Formatter for Euro values to make reading them easier.
     let formatter = new Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR',});
     // Constants
+    const s_per_day = 86400; // Seconds in a day
+    const s_per_hour = 3600 // Seconds in an hour
     const elementErrorMessage = document.getElementById("error_ele");
     const elementBearishTrend = document.getElementById("bearish_ele");
     const elementTradingVolume = document.getElementById("volume_value_ele");
@@ -80,16 +82,11 @@
         else {
             elementErrorMessage.innerHTML = ""
         }
-        // Reset price and volume data so we don't use the old data to fill the charts and get the information
-        priceData.datasets[0]["data"] = []
-        volumeData.datasets[0]["data"] = []
-        // empty the labels array so we don't use the old data
-        labels.length = 0
-        startDate = new Date(startDate).getTime() / 1000 - 86400
+        startDate = new Date(startDate).getTime() / 1000 - s_per_day
         // get the last days data as well, which may go over to the next day by few minutes
         // 90000 (25 hours), 3600 (one hour), 86400 (24 hours)
         // Add time to the ranges end parameter to get the values at end point.
-        endDate = new Date(endDate).getTime() / 1000 + 3600
+        endDate = new Date(endDate).getTime() / 1000 + s_per_hour
         let currentAddress = address.concat(startDate, "&to=", endDate)
         // Fetch the bitcoin data from the application programming interface
         fetch(currentAddress)
@@ -97,17 +94,25 @@
         .then(data => parseData(data, startDate, endDate));
     }
 
+    function resetValues() {
+        // Reset price and volume data so we don't use the old data to fill the charts and get the information
+        priceData.datasets[0]["data"] = []
+        volumeData.datasets[0]["data"] = []
+        // empty the labels array so we don't use the old data
+        labels.length = 0
+    }
+
     function parseData(receivedData, startDate, endDate) { //Use data received from the API
+        resetValues() //reset the chart values to original state
         // prices is array of arrays which has first the time in unix time and then the actual value. Ex. [ 1637175613629, 53723.26420170224 ]
         let prices = receivedData["prices"];
         let volumes = receivedData["total_volumes"]
-        let s_per_day = 24*3600;
         let ms_until_midnight = s_per_day - startDate % s_per_day;
         // all midnights between start and end time. Not the actual available data points but the targets we want to get close to
         let midnights = []
-        let keepGoing = true
         let currentNight = startDate + ms_until_midnight
 
+        let keepGoing = true
         while (keepGoing == true) {
             if (currentNight < endDate) {
                 midnights.push(currentNight * 1000) //multiply by 1000 due to ms being 1/1000 of second
