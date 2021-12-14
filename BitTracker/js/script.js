@@ -192,18 +192,20 @@
         let datesUTC = getDatesUTC(closestTimePoints);
 
         // Get longest bearish trend in days and the start and end date of the trend
-        let insight1Array = getInsight1(dailyPrices, datesUTC)
+        let insight1Array = getInsight1(dailyPrices, datesUTC);
 
         // Get day with highest trading volume in euros
-        let insight2Array = getInsight2(dailyVolumes, datesUTC)
+        let insight2Array = getInsight2(dailyVolumes, datesUTC);
         
         // Get theoretical best days to buy and sell Bitcoin during selected time period by getting and comparing value increase multipliers
-        let insight3Array = getInsight3(dailyPrices, closestTimePoints)
+        let insight3Array = getInsight3(dailyPrices, closestTimePoints);
 
         // update text elements with points of interest in the data
         updateInsights(insight1Array, insight2Array, insight3Array)
+
         // Set relevant data to charts labels and datasets
         setChartData(closestTimePoints, dailyPrices, dailyVolumes, datesUTC)
+        
         // update charts with price and trade volume information
         updateCharts()
     }
