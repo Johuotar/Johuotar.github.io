@@ -192,6 +192,24 @@
         let datesUTC = getDatesUTC(closestTimePoints);
 
         // Get longest bearish trend in days and the start and end date of the trend
+        let insight1Array = getInsight1(dailyPrices, datesUTC)
+
+        // Get day with highest trading volume in euros
+        let insight2Array = getInsight2(dailyVolumes, datesUTC)
+        
+        // Get theoretical best days to buy and sell Bitcoin during selected time period by getting and comparing value increase multipliers
+        let insight3Array = getInsight3(dailyPrices, closestTimePoints)
+
+        // update text elements with points of interest in the data
+        updateInsights(insight1Array, insight2Array, insight3Array)
+        // Set relevant data to charts labels and datasets
+        setChartData(closestTimePoints, dailyPrices, dailyVolumes, datesUTC)
+        // update charts with price and trade volume information
+        updateCharts()
+    }
+
+    function getInsight1(dailyPrices, datesUTC) {
+        // Get longest bearish trend in days and the start and end date of the trend in UTC
         let previousPrice = 0;
         let trendLength = 0;
         let trendLengthMax = 0;
@@ -211,8 +229,10 @@
             }
             previousPrice = dailyPrices[i]
         }
+        return [trendLengthMax, datesUTC[trendIndex - trendLengthMax], datesUTC[trendIndex]]
+    }
 
-        // Get day with highest trading volume in euros
+    function getInsight2(dailyVolumes, datesUTC) { //Date of highest trade volume and the trade volume in euros
         let highestTradingDay = null;
         let highestTradingVolume = 0;
         for (let i = 0; i < dailyVolumes.length; i++) {
@@ -221,8 +241,10 @@
                 highestTradingDay = datesUTC[i]
             }
         }
-        
-        // Get theoretical best days to buy and sell Bitcoin during selected time period by getting and comparing value increase multipliers
+        return [highestTradingDay, formatter.format(highestTradingVolume)]
+    }
+
+    function getInsight3(dailyPrices, closestTimePoints) { // Best days to buy and sell bitcoin
         let highestMultiplier = 0.0;
         let startEndDate = []; //array containing two values, the best days for buying and selling
         for (let i = 0; i < dailyPrices.length; i++) {
@@ -238,13 +260,7 @@
         buyDay = newDate.toUTCString()
         newDate = new Date(closestTimePoints[startEndDate[1]]);
         SellDay = newDate.toUTCString()
-
-        // update text elements with points of interest in the data
-        updateInsights(trendLengthMax, trendIndex, highestTradingDay, highestTradingVolume, highestMultiplier, buyDay, SellDay, datesUTC)
-        // Set relevant data to charts labels and datasets
-        setChartData(closestTimePoints, dailyPrices, dailyVolumes, datesUTC)
-        // update charts with price and trade volume information
-        updateCharts()
+        return [buyDay, SellDay, highestMultiplier]
     }
 
     function updateCharts() {
@@ -252,17 +268,17 @@
         VolumeChart.update();
     }
 
-    function updateInsights(trendLengthMax, trendIndex, highestTradingDay, highestTradingVolume, highestMultiplier, buyDay, SellDay, datesUTC) {
+    function updateInsights(insight1Array, insight2Array, insight3Array) {
         // Set longest bearish trend to the element 1
-        elementBearishTrend.innerHTML = "Longest bearish, AKA downwards trend in days during the selected time period is " + trendLengthMax + " days, starting from " + datesUTC[trendIndex - trendLengthMax] + " and ending on " + datesUTC[trendIndex];
+        elementBearishTrend.innerHTML = "Longest bearish, AKA downwards trend in days during the selected time period is " + insight1Array[0] + " days, starting from " + insight1Array[1] + " and ending on " + insight1Array[2];
         // Set day with highest trading volume to element 2
-        elementTradingVolume.innerHTML = "Highest trading volume in Euros during the selected time period was on " + highestTradingDay + " with value of " + formatter.format(highestTradingVolume);
+        elementTradingVolume.innerHTML = "Highest trading volume in Euros during the selected time period was on " + insight2Array[0] + " with value of " + insight2Array[1];
         // Set best days to buy and sell Bitcoin to element 3
-        if (highestMultiplier <= 1.0) {
+        if (insight3Array[2] <= 1.0) {
             elementBuySellDays.innerHTML = "Bitcoin's price did not increase during selected time period.";
         }
         else {
-            elementBuySellDays.innerHTML = "Best days to buy and sell during the selected time period was to buy on " + buyDay + " and sell on " + SellDay + " with price being multiplied by " + highestMultiplier;
+            elementBuySellDays.innerHTML = "Best days to buy and sell during the selected time period was to buy on " + insight3Array[0] + " and sell on " + insight3Array[1] + " with price being multiplied by " + insight3Array[2];
         }
     }
 
