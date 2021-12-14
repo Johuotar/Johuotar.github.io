@@ -102,17 +102,22 @@
         labels.length = 0
     }
 
-    function parseData(receivedData, startDate, endDate) { //Use data received from the API
-        resetValues() //reset the chart values to original state
-        // prices is array of arrays which has first the time in unix time and then the actual value. Ex. [ 1637175613629, 53723.26420170224 ]
-        let prices = receivedData["prices"];
-        let volumes = receivedData["total_volumes"]
-        let ms_until_midnight = s_per_day - startDate % s_per_day;
-        // all midnights between start and end time. Not the actual available data points but the targets we want to get close to
-        let midnights = []
-        let currentNight = startDate + ms_until_midnight
+    // Chart data setter
+    function setChartData(closestTimePoints, dailyPrices, dailyVolumes) {
+        for (let i = 0; i < closestTimePoints.length; i++) {
+            // Add the date as UTC format string to the charts label array
+            let newDate = new Date(closestTimePoints[i]);
+            labels.push(newDate.toUTCString())
+            // Add prices and trading volumes to charts datasets
+            priceData.datasets[0]["data"].push(dailyPrices[i])
+            volumeData.datasets[0]["data"].push(dailyVolumes[i])
+        }
+    }
 
+    // getter for which determines and returns all midnights within time selection
+    function getMidnights(currentNight, endDate) {
         let keepGoing = true
+        let midnights = []
         while (keepGoing == true) {
             if (currentNight < endDate) {
                 midnights.push(currentNight * 1000) //multiply by 1000 due to ms being 1/1000 of second
@@ -122,6 +127,18 @@
                 keepGoing = false
             }
         }
+        return midnights
+    }
+
+    function parseData(receivedData, startDate, endDate) { //Use data received from the API
+        resetValues() //reset the chart values to original state
+        // prices is array of arrays which has first the time in unix time and then the actual value. Ex. [ 1637175613629, 53723.26420170224 ]
+        let prices = receivedData["prices"];
+        let volumes = receivedData["total_volumes"]
+        let ms_until_midnight = s_per_day - startDate % s_per_day;
+        // all midnights between start and end time. Not the actual available data points but the targets we want to get close to
+        let currentNight = startDate + ms_until_midnight
+        let midnights = getMidnights(currentNight, endDate)
 
         //Gather time points and prices closest to every midnight during time selection
         let closestTimePoints = [] //timepoints closest to the midnigths that we want data from
@@ -162,14 +179,8 @@
             }
         }
 
-        for (let i = 0; i < closestTimePoints.length; i++) {
-            // Add the date as UTC format string to the charts label array
-            let newDate = new Date(closestTimePoints[i]);
-            labels.push(newDate.toUTCString())
-            // Add prices and trading volumes to charts datasets
-            priceData.datasets[0]["data"].push(dailyPrices[i])
-            volumeData.datasets[0]["data"].push(dailyVolumes[i])
-        }
+        // Set relevant data to charts labels and datasets
+        setChartData(closestTimePoints, dailyPrices, dailyVolumes)
 
         // Get longest bearish trend in days and the start and end date of the trend
         let previousPrice = 0;
