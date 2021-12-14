@@ -84,7 +84,7 @@
         }
         startDate = new Date(startDate).getTime() / 1000 - s_per_day
         // get the last days data as well, which may go over to the next day by few minutes
-        // 90000 (25 hours), 3600 (one hour), 86400 (24 hours)
+        // 3600 (one hour), 86400 (24 hours), 90000 (25 hours)
         // Add time to the ranges end parameter to get the values at end point.
         endDate = new Date(endDate).getTime() / 1000 + s_per_hour
         let currentAddress = address.concat(startDate, "&to=", endDate)
@@ -140,7 +140,7 @@
         let currentNight = startDate + ms_until_midnight
         let midnights = getMidnights(currentNight, endDate)
 
-        //Gather time points and prices closest to every midnight during time selection
+        //Gather time points, prices and trade values closest to every midnight during time selection
         let closestTimePoints = [] //timepoints closest to the midnigths that we want data from
         let dailyPrices = []
         let dailyVolumes = []
