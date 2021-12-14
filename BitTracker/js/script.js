@@ -138,7 +138,6 @@
         }
         return datesUTC
     }
-    
 
     function parseData(receivedData, startDate, endDate) { //Use data received from the API
         resetValues() //reset the chart values to original state
@@ -240,12 +239,12 @@
         newDate = new Date(closestTimePoints[startEndDate[1]]);
         SellDay = newDate.toUTCString()
 
+        // update text elements with points of interest in the data
+        updateInsights(trendLengthMax, trendIndex, highestTradingDay, highestTradingVolume, highestMultiplier, buyDay, SellDay, datesUTC)
         // Set relevant data to charts labels and datasets
         setChartData(closestTimePoints, dailyPrices, dailyVolumes, datesUTC)
         // update charts with price and trade volume information
         updateCharts()
-        // update text elements with points of interest in the data
-        updateInsights(trendLengthMax, trendIndex, highestTradingDay, highestTradingVolume, highestMultiplier, buyDay, SellDay)
     }
 
     function updateCharts() {
@@ -253,7 +252,7 @@
         VolumeChart.update();
     }
 
-    function updateInsights(trendLengthMax, trendIndex, highestTradingDay, highestTradingVolume, highestMultiplier, buyDay, SellDay) {
+    function updateInsights(trendLengthMax, trendIndex, highestTradingDay, highestTradingVolume, highestMultiplier, buyDay, SellDay, datesUTC) {
         // Set longest bearish trend to the element 1
         elementBearishTrend.innerHTML = "Longest bearish, AKA downwards trend in days during the selected time period is " + trendLengthMax + " days, starting from " + datesUTC[trendIndex - trendLengthMax] + " and ending on " + datesUTC[trendIndex];
         // Set day with highest trading volume to element 2
