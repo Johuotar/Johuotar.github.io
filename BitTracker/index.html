@@ -14,8 +14,7 @@
     <meta property="og:description" content="Bitcoin value and trade volume tracker." />
     <meta property="og:url" content="https://johuotar.github.io/BitTracker/" />
     <meta property="og:site_name" content="BitTracker" />
-    <!-- Chart.js plugin for showing price history -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="css/styles.css"/>
 
@@ -32,7 +31,7 @@
     <!-- Navigation top bar ends -->
 
     <!-- Select time range -->
-    <div class="time padding_top_small">
+    <div class="time">
         <p>Choose time range:</p>
         <div class="rows">
             <div class="selection">
@@ -51,43 +50,77 @@
         <br><br>
         <button class="interactable" id="getDataButton">Get data</button>
     </div>
-        <!-- Time selection ends -->
+    <!-- Time selection ends -->
+
+    <!-- Errors will be shown in error element -->
+    <div class="rows">
+        <p id="error_ele" class="result"></p>
+    </div>
 
     <div class="padding">
+        <div class="rows">
+            <!-- Quick results -->
+            <div class="box">
+                <p class="result">Bearish trend:</p>
+                <p id="bearish_summary" class="result-large">
+                    X
+                </p>
+            </div>
+            <div class="box">
+                <p class="result">Trading volume:</p>
+                <p id="volume_value_summary" class="result-large">
+                    X €
+                </p>
+            </div>
+            <div class="box">
+                <p class="result">Buy and sell:</p>
+                <p id="best_dates_summary" class="result-large">
+                    X and Y
+                </p>
+            </div>
+        </div>
+
+    <br>
+        
     <div class="rows">
-        <!-- Errors will be shown in error element -->
-        <p id="error_ele" class="result"></p>
         <!-- Results -->
-        <p id="bearish_ele" class="result">
-            Longest bearish, AKA downwards trend in days during the selected time period is X days.
-        </p>
-
-        <p id="volume_value_ele" class="result">
-            Highest trading volume in euros during selected time period is X € on day Y.
-        </p>
-
-        <p id="best_dates_ele" class="result">
-            Best theoretical days to buy and sell in the selected time period are X and Y.
-        </p>
-    </div>
-    </div>
-
-    <div class="chart">
-        <p class="desc">
-            Bitcoin value during selected time period.
-        </p>
-        <div>
-            <canvas id="ChartCanvas"></canvas>
+        <div class="box">
+            <p id="bearish_ele" class="result">
+                Longest bearish, AKA downwards trend in days during the selected time period is X days.
+            </p>
         </div>
+        <div class="box">
+            <p id="volume_value_ele" class="result">
+                Highest trading volume in euros during selected time period is X € on day Y.
+            </p>
+        </div>
+        <div class="box">
+            <p id="best_dates_ele" class="result">
+                Best theoretical days to buy and sell in the selected time period are X and Y.
+            </p>
+        </div>
+    </div>
+    </div>
 
+    <div class="rows chart">
+        <div class="chart-left">
+            <p class="desc">
+                Bitcoin value during selected time period.
+            </p>
+            <div>
+                <canvas id="ChartCanvas"></canvas>
+            </div>
+        </div>
         <br>
-        <p class="desc">
-            Bitcoin trading volume during selected time period.
-        </p>
-        <div>
-            <canvas id="VolumeChartCanvas"></canvas>
+        <div class="chart-right">
+            <p class="desc">
+                Bitcoin trading volume during selected time period.
+            </p>
+            <div>
+                <canvas id="VolumeChartCanvas"></canvas>
+            </div>
         </div>
-
+    </div>
         <!-- Results end -->
 
         <!-- Footer -->
@@ -100,10 +133,10 @@
             </footer>
         </div>
         <!-- Footer ends-->
-    </div>
+    
 
-<!-- JS -->
-<script src="js/script.js"></script>
+<!-- Chart.js plugin for showing price history, webpack bundle -->
+<script src="dist/bundle.js"></script>
 
 </body>
 </html>
