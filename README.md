@@ -3,8 +3,11 @@
 Game projects:
 -Rpg created with Godot
 -2D Cave flyer created with JavaScript
+-turn based isometric strategy game
 
 https://johuotar.github.io/
+
+https://johuotar.github.io/ChitsWebRelease/Chits.html
 
 
 HTML/CSS/Bootstrap/JS learning projects:
