@@ -13,7 +13,7 @@ https://johuotar.github.io/ChitsWebRelease/Chits.html
 HTML/CSS/Bootstrap/JS learning projects:
 
 Soundcloud type audio player:
-https://johuotar.github.io/audioplayer/index.html
+https://audioplayer.fly.dev/
 
 Valentino Rossi Fansite:
 https://johuotar.github.io/RossiFansite/index.html
